@@ -13,7 +13,8 @@ from transformers import (
 class TranscriptionService:
     def __init__(self):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.model_path = "bangla-speech-processing/BanglaASR"
+        # self.model_path = "bangla-speech-processing/BanglaASR"
+        self.model_path = "shhossain/whisper-base-bn"
         self._load_model()
 
     def _load_model(self):
