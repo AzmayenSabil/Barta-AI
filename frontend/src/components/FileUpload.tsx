@@ -38,7 +38,7 @@ export default function FileUpload({ onFileUpload }: { onFileUpload: (transcript
 
       //http://localhost:8000/api/transcribe/whisper
       //http://localhost:8000/api/transcribe/wav2vec
-      const response = await fetch('http://localhost:8000/api/transcribe/whisper', {
+      const response = await fetch('http://localhost:8000/api/transcribe/wav2vec', {
         method: 'POST',
         body: formData,
       });
