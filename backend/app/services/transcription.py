@@ -23,10 +23,10 @@ class TranscriptionService:
 
     def transcribe_audio(self, audio_path: str) -> str:
         try:
-            print(f"Loading audio file: {audio_path}")
+            # print(f"Loading audio file: {audio_path}")
             speech_array, sampling_rate = librosa.load(audio_path, sr=16000)
 
-            print(f"Audio loaded. Shape: {speech_array.shape}, Sampling rate: {sampling_rate}")
+            # print(f"Audio loaded. Shape: {speech_array.shape}, Sampling rate: {sampling_rate}")
             speech_array = speech_array.astype(np.float32)
 
             input_features = self.feature_extractor(
@@ -35,13 +35,13 @@ class TranscriptionService:
                 return_tensors="pt"
             ).input_features
 
-            print("Generating transcript...")
+            # print("Generating transcript...")
             predicted_ids = self.model.generate(
                 inputs=input_features.to(self.device)
             )[0]
 
             transcript = self.processor.decode(predicted_ids, skip_special_tokens=True)
-            print(f"Transcript generated: {transcript[:100]}...")
+            # print(f"Transcript generated: {transcript[:100]}...")
             return transcript
 
         except Exception as e:

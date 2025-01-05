@@ -12,9 +12,11 @@ transcription_service = TranscriptionService()
 
 @transcription_router.post("/")
 async def transcribe_audio(file: UploadFile = File(...)):
+    print("Transcribing audio file...")
     temp_path = save_temp_file(file)
     try:
         transcript = transcription_service.transcribe_audio(temp_path)
+        print("Transcription Returned")
         return {"status": "success", "transcript": transcript}
 
     except Exception as e:
