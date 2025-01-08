@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, CheckCircle, AlertCircle, X } from 'lucide-react';
+import { Upload, CheckCircle, AlertCircle, X, FileAudio } from 'lucide-react';
 
 interface UploadModalProps {
   isOpen: boolean;
@@ -36,7 +36,6 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
     }
 
     setUploadStatus('uploading');
-    // Simulating upload delay
     setTimeout(() => {
       setUploadStatus('success');
       onUpload?.(file);
@@ -44,22 +43,19 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg w-full max-w-xl p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold">Upload an audio or video file to generate a transcript</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-            <X className="h-6 w-6" />
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl transform transition-all">
+        <div className="flex justify-end">
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+            <X className="h-5 w-5" />
           </button>
         </div>
         
-        <p className="text-sm text-gray-600 mb-4">
-          Depending on the size of the audio file, it will be processed & transcribed in 10 - 15 mins
-        </p>
-
         <div
-          className={`border-2 border-dashed rounded-lg p-12 transition-colors ${
-            isDragging ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300'
+          className={`mt-4 border-2 border-dashed rounded-xl p-8 transition-all duration-300 ${
+            isDragging 
+              ? 'border-indigo-500 bg-indigo-50 scale-105' 
+              : 'border-gray-200 hover:border-gray-300'
           }`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -67,22 +63,39 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
         >
           <div className="text-center space-y-4">
             <div className="flex justify-center">
-              {uploadStatus === 'idle' && <Upload className="h-12 w-12 text-gray-400" />}
-              {uploadStatus === 'uploading' && <Upload className="h-12 w-12 text-indigo-500 animate-pulse" />}
-              {uploadStatus === 'success' && <CheckCircle className="h-12 w-12 text-green-500" />}
-              {uploadStatus === 'error' && <AlertCircle className="h-12 w-12 text-red-500" />}
+              {uploadStatus === 'idle' && (
+                <div className="p-4 bg-indigo-50 rounded-full">
+                  <FileAudio className="h-8 w-8 text-indigo-600" />
+                </div>
+              )}
+              {uploadStatus === 'uploading' && (
+                <div className="p-4 bg-indigo-50 rounded-full animate-pulse">
+                  <Upload className="h-8 w-8 text-indigo-600" />
+                </div>
+              )}
+              {uploadStatus === 'success' && (
+                <div className="p-4 bg-green-50 rounded-full">
+                  <CheckCircle className="h-8 w-8 text-green-500" />
+                </div>
+              )}
+              {uploadStatus === 'error' && (
+                <div className="p-4 bg-red-50 rounded-full">
+                  <AlertCircle className="h-8 w-8 text-red-500" />
+                </div>
+              )}
             </div>
             
-            <div className="space-y-2">
-              <p className="text-gray-600">Drag and drop MP3, M4A, WAV or MP4 file here, or select files to upload</p>
-              <label className="inline-block">
+            <div>
+              <label className="cursor-pointer group">
                 <input
                   type="file"
                   className="hidden"
                   accept="audio/*,video/*"
                   onChange={(e) => handleFileUpload(e.target.files?.[0])}
                 />
-                <span className="cursor-pointer text-indigo-600 hover:text-indigo-800">Browse files</span>
+                <span className="text-sm text-gray-500 group-hover:text-indigo-600 transition-colors">
+                  Drop audio file or click to upload
+                </span>
               </label>
             </div>
           </div>
@@ -90,6 +103,6 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
       </div>
     </div>
   );
-};
+}
 
 export default UploadModal;
