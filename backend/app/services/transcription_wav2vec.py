@@ -15,19 +15,20 @@ class Wav2Vec2TranscriptionService:
         try:
             # Load and preprocess audio
             speech_array, sampling_rate = torchaudio.load(audio_path)
-            speech_array = self.resampler(speech_array).squeeze().numpy()
 
-            # Prepare inputs
-            inputs = self.processor(
-                speech_array, sampling_rate=16_000, return_tensors="pt", padding=True
-            )
+            # Resample if necessary
+            if sampling_rate != 16000:
+                speech_array = self.resampler(speech_array)
+
+            # Prepare inputs for Wav2Vec2
+            inputs = self.processor(speech_array.squeeze().numpy(), sampling_rate=16_000, return_tensors="pt", padding=True)
 
             # Perform inference
             with torch.no_grad():
                 logits = self.model(inputs.input_values.to(self.device)).logits
-            predicted_ids = torch.argmax(logits, dim=-1)
 
             # Decode transcription
+            predicted_ids = torch.argmax(logits, dim=-1)
             transcription = self.processor.decode(predicted_ids[0])
             return transcription
 

@@ -81,4 +81,3 @@ async def transcribe_with_wav2vec(file: UploadFile = File(...)):
         delete_file(temp_path)
         if processed_audio_path and os.path.exists(processed_audio_path):
             delete_file(processed_audio_path)
-
