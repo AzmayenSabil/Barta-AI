@@ -4,12 +4,13 @@ import { Upload, CheckCircle, AlertCircle, X, FileAudio } from 'lucide-react';
 interface UploadModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpload: (file: File) => void;
+  onUpload: (transcript: string) => void;
 }
 
 const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
+  const [transcript, setTranscript] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -36,10 +37,31 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
     }
 
     setUploadStatus('uploading');
-    setTimeout(() => {
-      setUploadStatus('success');
-      onUpload?.(file);
-    }, 2000);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      //http://localhost:8000/api/transcribe/whisper
+      //http://localhost:8000/api/transcribe/wav2vec
+      const response = await fetch('http://localhost:8000/api/transcribe/wav2vec', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.status === 'success') {
+        setUploadStatus('success');
+        setTranscript(data.transcript);
+        onUpload(data.transcript); // Pass transcript to parent component
+      } else {
+        throw new Error(data.error || 'Unknown error occurred');
+      }
+    } catch (error) {
+      console.error('File upload failed:', error);
+      setUploadStatus('error');
+    }
   };
 
   return (
@@ -50,11 +72,11 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
             <X className="h-5 w-5" />
           </button>
         </div>
-        
+
         <div
           className={`mt-4 border-2 border-dashed rounded-xl p-8 transition-all duration-300 ${
-            isDragging 
-              ? 'border-indigo-500 bg-indigo-50 scale-105' 
+            isDragging
+              ? 'border-indigo-500 bg-indigo-50 scale-105'
               : 'border-gray-200 hover:border-gray-300'
           }`}
           onDragOver={handleDragOver}
@@ -84,7 +106,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
                 </div>
               )}
             </div>
-            
+
             <div>
               <label className="cursor-pointer group">
                 <input
@@ -100,9 +122,18 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
             </div>
           </div>
         </div>
+
+        {transcript && (
+          <div className="mt-4">
+            <h3 className="text-md font-medium text-gray-700">Generated Transcript:</h3>
+            <div className="p-4 mt-2 bg-gray-100 border rounded-md text-sm text-gray-800">
+              {transcript}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
-}
+};
 
 export default UploadModal;

@@ -58,6 +58,7 @@ async def transcribe_with_wav2vec(file: UploadFile = File(...)):
     Endpoint for transcribing audio using Wav2Vec2 with audio preprocessing.
     """
     temp_path = save_temp_file(file)  # Save the uploaded file temporarily
+    processed_audio_path = None  # Initialize the variable outside the try block
     try:
         # Preprocess the audio file and get the audio array and sample rate
         audio_array, sample_rate = audio_preprocessor.preprocess(temp_path)
@@ -78,5 +79,6 @@ async def transcribe_with_wav2vec(file: UploadFile = File(...)):
     finally:
         # Cleanup temporary files
         delete_file(temp_path)
-        if os.path.exists(processed_audio_path):
+        if processed_audio_path and os.path.exists(processed_audio_path):
             delete_file(processed_audio_path)
+
