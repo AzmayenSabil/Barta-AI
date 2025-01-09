@@ -1,6 +1,6 @@
 import React from 'react';
 import { FileText, List, CheckSquare, BarChart3, Users, ThumbsUp, Loader2 } from 'lucide-react';
-import { Meeting } from '../types';
+import { Meeting } from '../../types';
 
 interface MeetingContentProps {
   meeting: Meeting | undefined;

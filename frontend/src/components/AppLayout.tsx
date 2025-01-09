@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import Navbar from './Navbar';
-import Sidebar from './Sidebar';
-import MeetingContent from './MeetingContent';
-import UploadModal from './UploadModal';
-import ProfileModal from './ProfileModal';
+import Navbar from './navigation/Navbar';
+import Sidebar from './navigation/Sidebar';
+import MeetingContent from './meetingContentViewer/MeetingContent';
+import UploadModal from './modals/UploadModal';
+import ProfileModal from './modals/profile/ProfileModal';
 import { Meeting } from '../types';
+import Footer from './navigation/Footer';
 
 const initialMeetings: Meeting[] = [
   { id: 1, title: "Team Planning Meeting", date: "April 2, 2025", duration: "45 minutes" },
@@ -21,7 +22,6 @@ function AppLayout() {
   const [isProfileModalOpen, setProfileModalOpen] = useState(false);
 
   const handleFileUpload = (file: File) => {
-    // Create new meeting entry
     const newMeeting: Meeting = {
       id: meetings.length + 1,
       title: file.name.replace(/\.[^/.]+$/, ""),
@@ -33,19 +33,11 @@ function AppLayout() {
       duration: "Processing...",
     };
 
-    // Add new meeting to list
     setMeetings([newMeeting, ...meetings]);
-    
-    // Select the new meeting
     setSelectedMeeting(newMeeting.id);
-    
-    // Close upload modal
     setUploadModalOpen(false);
-    
-    // Show transcript tab
     setActiveTab('transcript');
 
-    // Simulate processing completion after 2 seconds
     setTimeout(() => {
       setMeetings(prevMeetings => 
         prevMeetings.map(meeting => 
@@ -58,14 +50,16 @@ function AppLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      {/* Navbar */}
       <Navbar
         onToggleSidebar={() => setSidebarOpen(!isSidebarOpen)}
         onUploadClick={() => setUploadModalOpen(true)}
         onProfileClick={() => setProfileModalOpen(true)}
       />
 
-      <div className="flex">
+      {/* Main Content */}
+      <div className="flex flex-1">
         <Sidebar
           isOpen={isSidebarOpen}
           meetings={meetings}
@@ -83,6 +77,7 @@ function AppLayout() {
         </div>
       </div>
 
+      {/* Modals */}
       <UploadModal
         isOpen={isUploadModalOpen}
         onClose={() => setUploadModalOpen(false)}
@@ -93,6 +88,9 @@ function AppLayout() {
         isOpen={isProfileModalOpen}
         onClose={() => setProfileModalOpen(false)}
       />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

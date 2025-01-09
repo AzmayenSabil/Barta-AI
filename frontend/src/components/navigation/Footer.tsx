@@ -19,11 +19,11 @@ export default function Footer() {
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4">Contact</h3>
-            <p className="text-sm">Email: support@transcribeai.com</p>
+            <p className="text-sm">Email: support@bartaai.com</p>
           </div>
         </div>
         <div className="border-t border-gray-700 mt-8 pt-4 text-center text-sm">
-          <p>&copy; {new Date().getFullYear()} TranscribeAI. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} CharCode. All rights reserved.</p>
         </div>
       </div>
     </footer>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronRight, Clock } from 'lucide-react';
-import { Meeting } from '../types';
+import { Meeting } from '../../types';
 
 interface SidebarProps {
   isOpen: boolean;
