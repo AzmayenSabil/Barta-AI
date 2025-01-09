@@ -1,19 +1,16 @@
-# transcription.py
-import os
 import librosa
 import torch
 import numpy as np
 from transformers import (
     WhisperProcessor,
     WhisperFeatureExtractor,
-    WhisperForConditionalGeneration
+    WhisperForConditionalGeneration,
 )
 
 
-class TranscriptionService:
+class WhisperTranscriptionService:
     def __init__(self):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        # self.model_path = "bangla-speech-processing/BanglaASR"
         self.model_path = "shhossain/whisper-base-bn"
         self._load_model()
 
@@ -26,13 +23,10 @@ class TranscriptionService:
 
     def transcribe_audio(self, audio_path: str) -> str:
         try:
-            # Use librosa to load the audio file instead of torchaudio
-            print(f"Loading audio file: {audio_path}")
+            # print(f"Loading audio file: {audio_path}")
             speech_array, sampling_rate = librosa.load(audio_path, sr=16000)
 
-            print(f"Audio loaded. Shape: {speech_array.shape}, Sampling rate: {sampling_rate}")
-
-            # Convert to float32 if needed
+            # print(f"Audio loaded. Shape: {speech_array.shape}, Sampling rate: {sampling_rate}")
             speech_array = speech_array.astype(np.float32)
 
             input_features = self.feature_extractor(
@@ -41,14 +35,13 @@ class TranscriptionService:
                 return_tensors="pt"
             ).input_features
 
-            print("Generating transcript...")
+            # print("Generating transcript...")
             predicted_ids = self.model.generate(
                 inputs=input_features.to(self.device)
             )[0]
 
             transcript = self.processor.decode(predicted_ids, skip_special_tokens=True)
-            print(f"Transcript generated: {transcript[:100]}...")  # Print first 100 chars
-
+            # print(f"Transcript generated: {transcript[:100]}...")
             return transcript
 
         except Exception as e:
