@@ -1,9 +1,16 @@
 import React from 'react';
 import { FileText, List, CheckSquare, BarChart3, Users, ThumbsUp, Loader2 } from 'lucide-react';
-import { Meeting } from '../../types';
+
+interface Meeting {
+  id: number;
+  title: string;
+  date: string;
+  duration: string;
+  transcript?: string;
+}
 
 interface MeetingContentProps {
-  meeting: Meeting | undefined;
+  meeting?: Meeting;
   activeTab: string;
   onTabChange: (tab: string) => void;
   isProcessing: boolean;
@@ -62,9 +69,9 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
         <h1 className="text-2xl font-bold mb-4">{meeting.title}</h1>
         <div className="prose max-w-none">
           {activeTab === 'transcript' && (
-            <p className="text-gray-600">
-              আমরা আজ টিম প্ল্যানিং নিয়ে আলোচনা করব...
-            </p>
+            <div className="whitespace-pre-wrap text-gray-600">
+              {meeting.transcript || 'No transcript available for this meeting.'}
+            </div>
           )}
           {activeTab === 'summary' && (
             <div className="space-y-8">

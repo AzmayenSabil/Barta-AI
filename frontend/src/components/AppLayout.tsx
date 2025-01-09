@@ -4,8 +4,16 @@ import Sidebar from './navigation/Sidebar';
 import MeetingContent from './meetingContentViewer/MeetingContent';
 import UploadModal from './modals/UploadModal';
 import ProfileModal from './modals/profile/ProfileModal';
-import { Meeting } from '../types';
 import Footer from './navigation/Footer';
+
+// Define interface directly in the component file
+interface Meeting {
+  id: number;
+  title: string;
+  date: string;
+  duration: string;
+  transcript?: string;
+}
 
 const initialMeetings: Meeting[] = [
   { id: 1, title: "Team Planning Meeting", date: "April 2, 2025", duration: "45 minutes" },
@@ -21,44 +29,35 @@ function AppLayout() {
   const [isUploadModalOpen, setUploadModalOpen] = useState(false);
   const [isProfileModalOpen, setProfileModalOpen] = useState(false);
 
-  const handleFileUpload = (file: File) => {
+  const handleTranscriptUpload = (transcript: string) => {
     const newMeeting: Meeting = {
       id: meetings.length + 1,
-      title: file.name.replace(/\.[^/.]+$/, ""),
+      title: `Meeting ${meetings.length + 1}`,
       date: new Date().toLocaleDateString('en-US', { 
         year: 'numeric', 
         month: 'long', 
         day: 'numeric' 
       }),
-      duration: "Processing...",
+      duration: "32 minutes",
+      transcript: transcript
     };
 
     setMeetings([newMeeting, ...meetings]);
     setSelectedMeeting(newMeeting.id);
     setUploadModalOpen(false);
     setActiveTab('transcript');
-
-    setTimeout(() => {
-      setMeetings(prevMeetings => 
-        prevMeetings.map(meeting => 
-          meeting.id === newMeeting.id 
-            ? { ...meeting, duration: "32 minutes" }
-            : meeting
-        )
-      );
-    }, 2000);
   };
+
+  const selectedMeetingData = meetings.find(m => m.id === selectedMeeting);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Navbar */}
       <Navbar
         onToggleSidebar={() => setSidebarOpen(!isSidebarOpen)}
         onUploadClick={() => setUploadModalOpen(true)}
         onProfileClick={() => setProfileModalOpen(true)}
       />
 
-      {/* Main Content */}
       <div className="flex flex-1">
         <Sidebar
           isOpen={isSidebarOpen}
@@ -69,19 +68,18 @@ function AppLayout() {
 
         <div className="flex-1 p-6">
           <MeetingContent
-            meeting={meetings.find(m => m.id === selectedMeeting)}
+            meeting={selectedMeetingData}
             activeTab={activeTab}
             onTabChange={setActiveTab}
-            isProcessing={meetings.find(m => m.id === selectedMeeting)?.duration === "Processing..."}
+            isProcessing={false}
           />
         </div>
       </div>
 
-      {/* Modals */}
       <UploadModal
         isOpen={isUploadModalOpen}
         onClose={() => setUploadModalOpen(false)}
-        onUpload={handleFileUpload}
+        onUpload={handleTranscriptUpload}
       />
 
       <ProfileModal
@@ -89,7 +87,6 @@ function AppLayout() {
         onClose={() => setProfileModalOpen(false)}
       />
 
-      {/* Footer */}
       <Footer />
     </div>
   );
