@@ -44,7 +44,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
 
       //http://localhost:8000/api/transcribe/whisper
       //http://localhost:8000/api/transcribe/wav2vec
-      const response = await fetch('http://localhost:8000/api/transcribe/wav2vec', {
+      const response = await fetch('http://localhost:8000/api/transcribe/whisper', {
         method: 'POST',
         body: formData,
       });
