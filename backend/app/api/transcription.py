@@ -1,9 +1,10 @@
 import os
 import tempfile
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Form
 from fastapi.responses import JSONResponse
 from app.services.transcription_whisper import WhisperTranscriptionService
 from app.services.transcription_wav2vec import Wav2Vec2TranscriptionService
+from app.services.transcription_google import GoogleTranscriptionService
 from app.utils.file_handler import save_temp_file, delete_file
 from app.utils.audio_preprocessing import AudioPreprocessor
 import soundfile as sf
@@ -14,6 +15,7 @@ transcription_router = APIRouter()
 # Initialize services
 whisper_service = WhisperTranscriptionService()
 wav2vec_service = Wav2Vec2TranscriptionService()
+google_service = GoogleTranscriptionService()
 audio_preprocessor = AudioPreprocessor()
 
 def save_audio_to_temp_file(audio_array, sample_rate):
@@ -48,7 +50,7 @@ async def transcribe_with_whisper(file: UploadFile = File(...)):
     """
     Endpoint for transcribing audio using Whisper with audio preprocessing.
     """
-    temp_files = []  # Track all temporary files for cleanup
+    temp_files = []
     
     try:
         # Validate file type
@@ -65,8 +67,6 @@ async def transcribe_with_whisper(file: UploadFile = File(...)):
         # Preprocess the audio file
         try:
             audio_array, sample_rate = audio_preprocessor.preprocess(temp_path)
-            
-            # Log audio duration for debugging
             duration = len(audio_array) / sample_rate
             print(f"Processed audio duration: {duration:.2f} seconds")
             
@@ -86,7 +86,7 @@ async def transcribe_with_whisper(file: UploadFile = File(...)):
                 detail=f"Failed to save processed audio: {str(e)}"
             )
 
-        # Transcribe the preprocessed audio
+        # Transcribe
         try:
             transcript = whisper_service.transcribe_audio(processed_audio_path)
         except Exception as e:
@@ -103,22 +103,17 @@ async def transcribe_with_whisper(file: UploadFile = File(...)):
         }
 
     except HTTPException as he:
-        return JSONResponse(
-            status_code=he.status_code,
-            content={"status": "error", "error": he.detail}
-        )
+        raise he
     except Exception as e:
-        return JSONResponse(
+        raise HTTPException(
             status_code=500,
-            content={"status": "error", "error": str(e)}
+            detail=str(e)
         )
     finally:
-        # Clean up all temporary files
+        # Clean up temporary files
         for temp_file in temp_files:
             if temp_file and os.path.exists(temp_file):
                 delete_file(temp_file)
-
-
 
 @transcription_router.post("/wav2vec")
 async def transcribe_with_wav2vec(file: UploadFile = File(...)):
@@ -136,3 +131,79 @@ async def transcribe_with_wav2vec(file: UploadFile = File(...)):
         )
     finally:
         delete_file(temp_path)
+
+@transcription_router.post("/google")
+async def transcribe_with_google(
+    file: UploadFile = File(...),
+    language_code: str = Form("bn-BD")
+):
+    """
+    Endpoint for transcribing audio using Google Speech-to-Text API.
+    """
+    temp_files = []
+    
+    try:
+        # Validate file type
+        if not file.filename.lower().endswith(('.mp3', '.wav', '.m4a', '.ogg')):
+            raise HTTPException(
+                status_code=400,
+                detail="Unsupported file format. Please upload MP3, WAV, M4A, or OGG files."
+            )
+
+        # Save uploaded file
+        temp_path = save_temp_file(file)
+        temp_files.append(temp_path)
+
+        # Preprocess the audio file
+        try:
+            audio_array, sample_rate = audio_preprocessor.preprocess(temp_path)
+            duration = len(audio_array) / sample_rate
+            
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Audio preprocessing failed: {str(e)}"
+            )
+
+        # Save preprocessed audio
+        try:
+            processed_audio_path = save_audio_to_temp_file(audio_array, sample_rate)
+            temp_files.append(processed_audio_path)
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to save processed audio: {str(e)}"
+            )
+
+        # Transcribe using Google Speech-to-Text
+        try:
+            transcript = google_service.transcribe_audio(
+                processed_audio_path,
+                language_code=language_code
+            )
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Google transcription failed: {str(e)}"
+            )
+
+        return {
+            "status": "success",
+            "transcript": transcript,
+            "audio_duration": duration,
+            "sample_rate": sample_rate,
+            "language": language_code
+        }
+
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+    finally:
+        # Clean up temporary files
+        for temp_file in temp_files:
+            if temp_file and os.path.exists(temp_file):
+                delete_file(temp_file)

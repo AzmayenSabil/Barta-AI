@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "barta-ai",
+  "private_key_id": "0944deb51fa7b4835ea404b488055ce4981e2e82",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDi52p7EkjlBB2P\nUsjdOuD+dOlmmOeO5gS1DCVxSdtayorhPnjqTa1QnTccxQmxfFSiWOUYrBjhUTGA\niMkEyq034QNZcU7gkkseiNhQOGsNYu8K2cIboC55sc23w93waHMv0sXvLHAEgrRI\nVhNOcV09Lv7g1SmyacU7hoAtWHKDr+0cunHSMe22zuXnPAroF3Zi2OqMbphQS7DJ\nE2rabOlOAu8riszl4NpxCguJQNFKgbWBfuveESfbrYzGnFgtWwlAtJ5qy9En8S0W\nJxGto+jgvH5snOeTHzvKXZ7GhyrFLs4pl4pr5k/96PxT9ibwrg6fIhR2Hgd5wJbR\nU7qN/iSBAgMBAAECggEABjb2aKaIjpU9Rgarb7vEG9QR7Hh1pylPqbHKeL7gHi17\n/k1avHgiLhoQP156NH1GSCgNJk7YY5t4sp+MefAfLG+iStnaojX/jreKzS+uZvB1\nwaNTOLR7cWPYUZcwxfvmY8HvH+zkqIr36x9Iahaayik2W+wat0NEXqwBaLyKbmbe\n8Kihei+NFbjeRXrn75oGR/8Xai3XZ+ebr26CnXBkOSRZxxAFZPlEk9Wz+z6slheh\n/SjEgyKdNcdgNjnqNs4TEXbrQ6tsshIhm22E2lDiJk6IN0i0lL51K2JHBHmROzB4\nY/Pn956gXY9Y4IxTKXcTRcJVuzymQ8384Nq41BGtzQKBgQDzpXrk2g4p6VU1xsmZ\nAndMhq8Cgoj9SzrlzvLWwfj2rV32BPZ7M/RUNX8NLKzpHOY5uAdaBwupThSRKZKN\nYVeKcl2uovDJ8CwNUKbAXtc5Ei8BXFaU2kFyRO/hNF7aHEQ++RMr/1h+Vrm/GDiZ\nc5pxJCToand4O0iNpyvfms8zxwKBgQDuaJ6oYNFK90TrjIbHrkubhhyVkRAFvAsB\nBhROgUbJMS14czG0Yz8qFiMNDwrf8IkS/fxAay8W9MUNo92pCUxkM747JFEQatoi\ni0uCP9y8eQbswo8T5+zGQ3mpyEThc8MdLVZQg9vVVaXV2ZcWSiDGAfZBpFcxMZji\nHBftYKRVdwKBgCYZUkZG8sALBJAMLaoHgLAuv18dGl7BTMxyt/ZtDolEQtUdoY1S\nanpggyWEPuWU50tPQ5cIUwJ+eyjX31rMRewYRh3wzMZHEBxk6C5cpjr+ZOtJjSBp\noKJFtVz523svwFw4ho7yttvKo/EF0JPuR9A5XqwZOeVLH+VGps2oX44xAoGAdPJ1\nAXucrv1knXctlj31cLD0zJmAFpALhdEJnQjlREQPXgqD00zr6yU4xGsgloFTfDGC\nz8bELqqbDvnW/dhF1NFc+33xFfCUWGWkAJx7Fyj3MKSvssAN8aOfxp0qzL0QdPuM\nX6qO57M/ygsWhiSOtxK3TbPj4YnGyQOm6RaDBjkCgYAVHFKzRJJ0iedS2M3Msyws\nydPIRmXYfA81qG/ZJRf6oIk1/ETKkAKgodSzl1eZVdKtj/ibLjrFswCSaMlHBBR0\nlTU1DcgTEWAta5noofnxJi9f/hK4kePX4ZN54KymKr8urbTxahAyJcdNc2fs7hFz\nhdCQRhJRDrxkp5r5Vit0iQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "barta-backend@barta-ai.iam.gserviceaccount.com",
+  "client_id": "101370555053933229526",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/barta-backend%40barta-ai.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
