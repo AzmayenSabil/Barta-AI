@@ -30,14 +30,6 @@ class GoogleTranscriptionService:
                 except json.JSONDecodeError:
                     print("Error: GOOGLE_CLOUD_CREDENTIALS is not valid JSON")
             
-            # If neither worked, look for default locations
-            default_paths = [
-                'secrets.json',
-                'secrets/secrets.json',
-                'backend/secrets/secrets.json',
-                os.path.join(os.path.dirname(__file__), 'secrets.json'),
-            ]
-            
             for path in default_paths:
                 if os.path.exists(path):
                     return service_account.Credentials.from_service_account_file(path)
