@@ -27,3 +27,4 @@ backend/app/__pycache__/main.cpython-310.pyc
 backend/app/services/__pycache__/transcription.cpython-310.pyc
 backend/app/services/__pycache__/transcription.cpython-310.pyc
 backend/creds.json
+backend/sa.json
