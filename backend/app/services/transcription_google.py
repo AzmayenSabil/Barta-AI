@@ -4,40 +4,30 @@ import os
 from dotenv import load_dotenv
 import json
 
-# Load environment variables
-load_dotenv()
-
 class GoogleTranscriptionService:
     def __init__(self):
+        # Load environment variables before anything else
+        if not load_dotenv():
+            print("Warning: No .env file found or error loading .env file")
+        
         self.credentials = self._load_credentials()
         self.speech_client = speech.SpeechClient(credentials=self.credentials)
         self.storage_client = storage.Client(credentials=self.credentials)
 
     def _load_credentials(self):
-        """Load credentials from environment variable or file."""
+        """Load credentials from JSON file."""
+        credentials_path = os.getenv('GOOGLE_CLOUD_CREDENTIALS')
+        
+        if not credentials_path:
+            raise Exception("GOOGLE_CLOUD_CREDENTIALS environment variable not found")
+            
+        if not os.path.exists(credentials_path):
+            raise Exception(f"Credentials file not found at: {credentials_path}")
+            
         try:
-            # First try loading from environment variable
-            credentials_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
-            if credentials_path and os.path.exists(credentials_path):
-                return service_account.Credentials.from_service_account_file(credentials_path)
-            
-            # If that fails, try loading from .env JSON
-            credentials_json = os.getenv('GOOGLE_CLOUD_CREDENTIALS')
-            if credentials_json:
-                try:
-                    credentials_info = json.loads(credentials_json)
-                    return service_account.Credentials.from_service_account_info(credentials_info)
-                except json.JSONDecodeError:
-                    print("Error: GOOGLE_CLOUD_CREDENTIALS is not valid JSON")
-            
-            for path in default_paths:
-                if os.path.exists(path):
-                    return service_account.Credentials.from_service_account_file(path)
-            
-            raise FileNotFoundError("No valid credentials found")
-            
+            return service_account.Credentials.from_service_account_file(credentials_path)
         except Exception as e:
-            raise Exception(f"Failed to load credentials: {str(e)}")
+            raise Exception(f"Failed to load credentials from file: {str(e)}")
 
     def upload_to_gcs(self, audio_path: str, bucket_name: str) -> str:
         """

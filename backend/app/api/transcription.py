@@ -115,6 +115,7 @@ async def transcribe_with_whisper(file: UploadFile = File(...)):
             if temp_file and os.path.exists(temp_file):
                 delete_file(temp_file)
 
+
 @transcription_router.post("/wav2vec")
 async def transcribe_with_wav2vec(file: UploadFile = File(...)):
     """
@@ -131,6 +132,7 @@ async def transcribe_with_wav2vec(file: UploadFile = File(...)):
         )
     finally:
         delete_file(temp_path)
+
 
 @transcription_router.post("/google")
 async def transcribe_with_google(
