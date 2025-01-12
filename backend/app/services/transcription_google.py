@@ -4,7 +4,7 @@ from google.oauth2 import service_account
 class GoogleTranscriptionService:
     def __init__(self):
         # Instantiates a client
-        self.client_file = "sa.json"
+        self.client_file = "creds.json"
         self.credentials = service_account.Credentials.from_service_account_file(self.client_file)
         self.speech_client = speech.SpeechClient(credentials=self.credentials)
         self.storage_client = storage.Client(credentials=self.credentials)
