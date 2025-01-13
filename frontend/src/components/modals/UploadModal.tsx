@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, CheckCircle, AlertCircle, X, FileAudio } from 'lucide-react';
+import { Upload, CheckCircle, AlertCircle, X, FileAudio, Loader2 } from 'lucide-react';
 
 interface UploadModalProps {
   isOpen: boolean;
@@ -11,6 +11,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
   const [isDragging, setIsDragging] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const [transcript, setTranscript] = useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
 
@@ -30,6 +31,10 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
     handleFileUpload(file);
   };
 
+  const handleClick = () => {
+    fileInputRef.current?.click();
+  };
+
   const handleFileUpload = async (file: File) => {
     if (!file || (!file.type.includes('audio') && !file.type.includes('video'))) {
       setUploadStatus('error');
@@ -42,9 +47,6 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
       const formData = new FormData();
       formData.append('file', file);
 
-      //http://localhost:8000/api/transcribe/whisper
-      //http://localhost:8000/api/transcribe/wav2vec
-      //http://localhost:8000/api/transcribe/google
       const response = await fetch('http://localhost:8000/api/transcribe/google', {
         method: 'POST',
         body: formData,
@@ -55,7 +57,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
       if (data.status === 'success') {
         setUploadStatus('success');
         setTranscript(data.transcript);
-        onUpload(data.transcript); // Pass transcript to parent component
+        onUpload(data.transcript);
       } else {
         throw new Error(data.error || 'Unknown error occurred');
       }
@@ -75,16 +77,25 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
         </div>
 
         <div
-          className={`mt-4 border-2 border-dashed rounded-xl p-8 transition-all duration-300 ${
-            isDragging
+          onClick={handleClick}
+          className={`mt-4 border-2 border-dashed rounded-xl p-8 transition-all duration-300 cursor-pointer
+            ${isDragging
               ? 'border-indigo-500 bg-indigo-50 scale-105'
-              : 'border-gray-200 hover:border-gray-300'
-          }`}
+              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+            }`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
           <div className="text-center space-y-4">
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              accept="audio/*,video/*"
+              onChange={(e) => handleFileUpload(e.target.files?.[0])}
+            />
+            
             <div className="flex justify-center">
               {uploadStatus === 'idle' && (
                 <div className="p-4 bg-indigo-50 rounded-full">
@@ -92,8 +103,11 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
                 </div>
               )}
               {uploadStatus === 'uploading' && (
-                <div className="p-4 bg-indigo-50 rounded-full animate-pulse">
-                  <Upload className="h-8 w-8 text-indigo-600" />
+                <div className="flex flex-col items-center space-y-3">
+                  <div className="p-4 bg-indigo-50 rounded-full">
+                    <Loader2 className="h-8 w-8 text-indigo-600 animate-spin" />
+                  </div>
+                  <p className="text-sm text-indigo-600">Transcribing your audio...</p>
                 </div>
               )}
               {uploadStatus === 'success' && (
@@ -109,17 +123,12 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
             </div>
 
             <div>
-              <label className="cursor-pointer group">
-                <input
-                  type="file"
-                  className="hidden"
-                  accept="audio/*,video/*"
-                  onChange={(e) => handleFileUpload(e.target.files?.[0])}
-                />
-                <span className="text-sm text-gray-500 group-hover:text-indigo-600 transition-colors">
-                  Drop audio file or click to upload
-                </span>
-              </label>
+              <span className="text-sm text-gray-500 group-hover:text-indigo-600 transition-colors">
+                {uploadStatus === 'uploading' 
+                  ? 'Please wait while we process your file...'
+                  : 'Drop audio file or click anywhere to upload'
+                }
+              </span>
             </div>
           </div>
         </div>

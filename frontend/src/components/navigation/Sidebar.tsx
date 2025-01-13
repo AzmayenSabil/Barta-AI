@@ -17,17 +17,19 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   return (
     <div
-      className={`bg-white w-80 border-r transition-all duration-300 ${
+      className={`bg-white w-80 border-r transition-all duration-300 h-screen flex flex-col ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
-      <div className="p-4">
-        <h2 className="text-xl font-semibold mb-4">Meeting History</h2>
+      <div className="p-6 flex-shrink-0">
+        <h2 className="text-xl font-semibold mb-6">Meeting History</h2>
+      </div>
+      <div className="flex-1 overflow-y-auto px-6 pb-6">
         <div className="space-y-2">
           {meetings.map((meeting) => (
             <div
               key={meeting.id}
-              className={`p-3 rounded-lg cursor-pointer transition-colors ${
+              className={`px-4 py-3 rounded-lg cursor-pointer transition-colors ${
                 selectedMeeting === meeting.id
                   ? 'bg-indigo-50 border-l-4 border-indigo-600'
                   : 'hover:bg-gray-50'
