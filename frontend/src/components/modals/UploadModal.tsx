@@ -58,6 +58,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
         setUploadStatus('success');
         setTranscript(data.transcript);
         onUpload(data.transcript);
+        handleClose();
       } else {
         throw new Error(data.error || 'Unknown error occurred');
       }
@@ -67,11 +68,17 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
     }
   };
 
+  const handleClose = () => {
+    setUploadStatus('idle'); // Reset the upload status
+    setTranscript(null); // Reset the transcript if needed
+    onClose(); // Call the passed-in onClose function
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl transform transition-all">
         <div className="flex justify-end">
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600 transition-colors">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -133,14 +140,14 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
           </div>
         </div>
 
-        {transcript && (
+        {/* {transcript && (
           <div className="mt-4">
             <h3 className="text-md font-medium text-gray-700">Generated Transcript:</h3>
             <div className="p-4 mt-2 bg-gray-100 border rounded-md text-sm text-gray-800">
               {transcript}
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

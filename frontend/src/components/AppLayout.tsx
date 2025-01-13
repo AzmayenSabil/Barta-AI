@@ -50,6 +50,10 @@ function AppLayout() {
 
   const selectedMeetingData = meetings.find(m => m.id === selectedMeeting);
 
+  const handleUploadModalClose = () => {
+    setUploadModalOpen(false);
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar
@@ -78,7 +82,7 @@ function AppLayout() {
 
       <UploadModal
         isOpen={isUploadModalOpen}
-        onClose={() => setUploadModalOpen(false)}
+        onClose={handleUploadModalClose}
         onUpload={handleTranscriptUpload}
       />
 
