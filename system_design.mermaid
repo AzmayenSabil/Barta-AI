@@ -1,0 +1,112 @@
+graph TD
+    %% Frontend Subsystem
+    subgraph "UI"
+        subgraph "Core Features"
+            Dashboard[Dashboard & Analytics]
+            MeetingMgmt[Meeting Management]
+            TranscriptView[Transcript Viewer]
+            ActionTracker[Action Item Tracker]
+            Search[Search & Discovery]
+            Reports[Reporting & Export]
+        end
+    end
+
+    %% Backend Subsystem
+    subgraph "Backend - FastAPI"
+        API[FastAPI REST Server]
+        AuthService[Auth Service]
+        UserService[User Management Service]
+        MeetingService[Meeting Management Service]
+        AudioService[Audio Handling Service]
+        AnalysisService[Text Analysis Service]
+        TaskService[Task Assignment Service]
+        QAService[Bangla QA & RAG Tool Service]
+        NotifService[Notification Service]
+
+        API --> AuthService
+        API --> UserService
+        API --> MeetingService
+        API --> AudioService
+        API --> AnalysisService
+        API --> TaskService
+        API --> QAService
+        API --> NotifService
+
+        subgraph "Audio Processing Pipeline"
+            Pre[Preprocessing Service]
+            ASR[Customizable ASR Service]
+            Post[Postprocessing Service]
+            
+            Pre --> ASR
+            ASR --> Post
+        end
+
+        subgraph "Analysis Pipeline"
+            Diar[Speaker Diarization Service]
+            Sum[Text Summarization Service]
+            Task[Task Assignment Service]
+            Question[Bangla QA Service]
+            RAG[Retrieval-Augmented Generation Tool]
+            
+            Post --> Diar
+            Diar --> Sum
+            Sum --> Task
+            Sum --> Question
+            Question --> RAG
+        end
+    end
+
+    %% Database Layer
+    subgraph "Database Layer"
+        Mongo[MongoDB - Main Database]
+        Redis[Redis Cache - Key-Value Store]
+        ES[Elasticsearch - Text Search & Analytics]
+
+        subgraph "MongoDB Collections"
+            Meetings[Meetings Collection]
+            Transcripts[Transcripts Collection]
+            Actions[Action Items Collection]
+            Summaries[Summaries Collection]
+        end
+
+        Mongo --> Meetings
+        Mongo --> Transcripts
+        Mongo --> Actions
+        Mongo --> Summaries
+    end
+
+    %% Communication & External Services
+    subgraph "External Services"
+        Email[Email Service e.g., SMTP]
+        SMS[SMS Gateway e.g., Twilio]
+        Push[Push Notification Service]
+    end
+
+    %% Connections
+    UI --> API
+    API --> Mongo
+    API --> Redis
+    API --> ES
+    API --> Email
+    API --> SMS
+    API --> Push
+
+    %% Authentication & Security
+    subgraph "Auth Subsystem"
+        OAuth[OAuth 2.0 Provider e.g., Google, Azure]
+        JWT[JWT Token Issuance & Validation]
+        Session[Session Management - Cookies]
+    end
+    AuthService --> OAuth
+    AuthService --> JWT
+    AuthService --> Session
+
+    %% Logging & Monitoring
+    subgraph "Monitoring & Observability"
+        Prometheus[Prometheus - Metrics Collection]
+        Grafana[Grafana - Metrics Visualization]
+        ELK[ELK Stack - Centralized Logging]
+    end
+    API --> Prometheus
+    Prometheus --> Grafana
+    API --> ELK
