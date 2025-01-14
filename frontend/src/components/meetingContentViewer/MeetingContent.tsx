@@ -70,7 +70,23 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
         <div className="prose max-w-none">
           {activeTab === 'transcript' && (
             <div className="whitespace-pre-wrap text-gray-600">
-              {meeting.transcript || 'No transcript available for this meeting.'}
+              {meeting.transcript ? (
+                <div className="space-y-4">
+                  {meeting.transcript
+                    .split('\n')
+                    .map((line, index) => {
+                      const [speaker, text] = line.split(':');
+                      return (
+                        <div key={index} className="flex flex-col">
+                          <span className="font-semibold text-blue-600">{speaker.trim()}:</span>
+                          <span className="ml-4 text-gray-700">{text.trim()}</span>
+                        </div>
+                      );
+                    })}
+                </div>
+              ) : (
+                'No transcript available for this meeting.'
+              )}
             </div>
           )}
           {activeTab === 'summary' && (

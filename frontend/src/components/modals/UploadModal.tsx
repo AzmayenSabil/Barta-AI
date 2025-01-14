@@ -36,37 +36,42 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUpload }) 
   };
 
   const handleFileUpload = async (file: File) => {
-    if (!file || (!file.type.includes('audio') && !file.type.includes('video'))) {
-      setUploadStatus('error');
-      return;
+  if (!file || (!file.type.includes('audio') && !file.type.includes('video'))) {
+    setUploadStatus('error');
+    return;
+  }
+
+  setUploadStatus('uploading');
+
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch('http://localhost:8000/api/transcribe/google', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (data.status === 'success') {
+      const formattedTranscript = data.diarized_transcript
+        .map((entry: { speaker: string; text: string }) => `${entry.speaker}: ${entry.text}`)
+        .join('\n');
+
+      setUploadStatus('success');
+      setTranscript(formattedTranscript); // Save formatted transcript
+      onUpload(formattedTranscript); // Send to parent component
+      handleClose();
+    } else {
+      throw new Error(data.error || 'Unknown error occurred');
     }
+  } catch (error) {
+    console.error('File upload failed:', error);
+    setUploadStatus('error');
+  }
+};
 
-    setUploadStatus('uploading');
-
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch('http://localhost:8000/api/transcribe/google', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (data.status === 'success') {
-        setUploadStatus('success');
-        setTranscript(data.transcript);
-        onUpload(data.transcript);
-        handleClose();
-      } else {
-        throw new Error(data.error || 'Unknown error occurred');
-      }
-    } catch (error) {
-      console.error('File upload failed:', error);
-      setUploadStatus('error');
-    }
-  };
 
   const handleClose = () => {
     setUploadStatus('idle'); // Reset the upload status
