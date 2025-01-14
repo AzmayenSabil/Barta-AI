@@ -23,6 +23,7 @@ This architecture outlines a comprehensive solution for processing Bangla audio 
 - **Primary ASR Model**: 
   - **Option 1**: Fine-tune the Whisper model on Bangla data.
   - **Option 2**: Use a custom ASR model (e.g., Wav2Vec 2.0 or Conformer) trained on Bangla speech.
+  - **Option 3**: Google Speech To Text (Free Trial).
 - **Speaker Diarization**: 
   - Segments the audio by speaker and labels the transcribed text accordingly.
 
