@@ -139,7 +139,8 @@ async def transcribe_with_wav2vec(file: UploadFile = File(...)):
 async def transcribe_with_google(
     file: UploadFile = File(...),
     language_code: str = Form("bn-BD"),
-    enable_diarization: bool = Form(True),  # Changed default to True
+    # enable_diarization: bool = Form(True),  # Changed default to True
+    enable_diarization: bool = Form(False),  # Changed default to True
     min_speakers: Optional[int] = Form(3),
     max_speakers: Optional[int] = Form(3)
 ):
