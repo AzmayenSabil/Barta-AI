@@ -68,7 +68,7 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h1 className="text-2xl font-bold mb-4">{meeting.title}</h1>
         <div className="prose max-w-none">
-          {activeTab === 'transcript' && (
+          {/* {activeTab === 'transcript' && (
             <div className="whitespace-pre-wrap text-gray-600">
               {meeting.transcript ? (
                 <div className="space-y-4">
@@ -88,7 +88,30 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
                 'No transcript available for this meeting.'
               )}
             </div>
+          )} */}
+          {activeTab === 'transcript' && (
+            <div className="whitespace-pre-wrap text-gray-600">
+              {meeting.transcript ? (
+                <div className="space-y-4">
+                  {meeting.transcript
+                    .split('\n')
+                    .map((line, index) => {
+                      const [speaker, text] = line.split(':');
+                      const speakerNumber = index % 2 === 0 ? 1 : 2; // Even index gets 2, odd index gets 1
+                      return (
+                        <div key={index} className="flex flex-col">
+                          <span className="font-semibold text-blue-600">{`Speaker ${speakerNumber}:`}</span>
+                          <span className="ml-4 text-gray-700">{text.trim()}</span>
+                        </div>
+                      );
+                    })}
+                </div>
+              ) : (
+                'No transcript available for this meeting.'
+              )}
+            </div>
           )}
+
           {activeTab === 'summary' && (
             <div className="space-y-8">
               <div className="grid grid-cols-3 gap-4">

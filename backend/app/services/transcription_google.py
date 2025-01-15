@@ -50,8 +50,8 @@ class GoogleTranscriptionService:
         audio_path: str,
         bucket_name: str = "barta-ai-bucket",
         language_code: str = "bn-BD",
-        min_speakers: int = 2,
-        max_speakers: int = 2
+        min_speakers: int = 3,
+        max_speakers: int = 3
     ) -> List[Dict]:
         """
         Transcribe audio with speaker diarization using Google Speech-to-Text API.
@@ -61,7 +61,8 @@ class GoogleTranscriptionService:
             
             # Configure speaker diarization
             diarization_config = speech.SpeakerDiarizationConfig(
-                enable_speaker_diarization=True,
+                # enable_speaker_diarization=True,
+                enable_speaker_diarization=False,
                 min_speaker_count=min_speakers,
                 max_speaker_count=max_speakers
             )
