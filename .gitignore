@@ -28,3 +28,4 @@ backend/app/services/__pycache__/transcription.cpython-310.pyc
 backend/app/services/__pycache__/transcription.cpython-310.pyc
 backend/secrets.json
 secrets.json
+bartaai-key.pem
