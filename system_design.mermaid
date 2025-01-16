@@ -6,7 +6,7 @@ graph TD
             MeetingMgmt[Meeting Management]
             TranscriptView[Transcript Viewer]
             ActionTracker[Action Item Tracker]
-            Search[Search & Discovery]
+            Search[Summary And Meeting Assistant]
             Reports[Reporting & Export]
         end
     end
@@ -34,7 +34,7 @@ graph TD
 
         subgraph "Audio Processing Pipeline"
             Pre[Preprocessing Service]
-            ASR[Customizable ASR Service]
+            ASR[Speech-To-Text Model Service]
             Post[Postprocessing Service]
             
             Pre --> ASR
@@ -59,16 +59,17 @@ graph TD
     %% Database Layer
     subgraph "Database Layer"
         Mongo[MongoDB - Main Database]
-        Redis[Redis Cache - Key-Value Store]
         ES[Elasticsearch - Text Search & Analytics]
 
         subgraph "MongoDB Collections"
+            Users[Users Collection]
             Meetings[Meetings Collection]
             Transcripts[Transcripts Collection]
             Actions[Action Items Collection]
             Summaries[Summaries Collection]
         end
 
+        Mongo --> Users
         Mongo --> Meetings
         Mongo --> Transcripts
         Mongo --> Actions
@@ -78,17 +79,14 @@ graph TD
     %% Communication & External Services
     subgraph "External Services"
         Email[Email Service e.g., SMTP]
-        SMS[SMS Gateway e.g., Twilio]
         Push[Push Notification Service]
     end
 
     %% Connections
     UI --> API
     API --> Mongo
-    API --> Redis
     API --> ES
     API --> Email
-    API --> SMS
     API --> Push
 
     %% Authentication & Security
