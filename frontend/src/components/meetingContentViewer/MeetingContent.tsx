@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, List, CheckSquare, BarChart3, Users, ThumbsUp, Loader2, Globe, Flag } from 'lucide-react';
+import { FileText, List, CheckSquare, BarChart3, Users, ThumbsUp, Loader2, Globe, Flag, Download, X } from 'lucide-react';
 
 interface Meeting {
   id: number;
@@ -16,6 +16,24 @@ interface MeetingContentProps {
   isProcessing: boolean;
 }
 
+const Modal = ({ isOpen, onClose, children }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 relative">
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+        >
+          <X className="h-5 w-5" />
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+};
+
 const MeetingContent: React.FC<MeetingContentProps> = ({
   meeting,
   activeTab,
@@ -23,6 +41,28 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
   isProcessing,
 }) => {
   const [showEnglish, setShowEnglish] = useState(false);
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadComplete, setDownloadComplete] = useState(false);
+
+  const handleDownload = () => {
+    setIsDownloadModalOpen(true);
+    setIsDownloading(true);
+    setDownloadComplete(false);
+
+    // Simulate download process
+    setTimeout(() => {
+      setIsDownloading(false);
+      setDownloadComplete(true);
+    }, 5000);
+  };
+
+  const closeModal = () => {
+    setIsDownloadModalOpen(false);
+    setIsDownloading(false);
+    setDownloadComplete(false);
+  };
+
 
   const keyPoints = {
     bengali: [
@@ -73,27 +113,58 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-6 border-b">
-        <div className="flex space-x-6">
-          <TabButton
-            icon={<FileText className="h-5 w-5" />}
-            label="Transcript"
-            isActive={activeTab === 'transcript'}
-            onClick={() => onTabChange('transcript')}
-          />
-          <TabButton
-            icon={<List className="h-5 w-5" />}
-            label="Summary"
-            isActive={activeTab === 'summary'}
-            onClick={() => onTabChange('summary')}
-          />
-          <TabButton
-            icon={<CheckSquare className="h-5 w-5" />}
-            label="Tasks"
-            isActive={activeTab === 'tasks'}
-            onClick={() => onTabChange('tasks')}
-          />
+        <div className="flex justify-between">
+          {/* Tabs on the left */}
+          <div className="flex space-x-6">
+            <TabButton
+              icon={<FileText className="h-5 w-5" />}
+              label="Transcript"
+              isActive={activeTab === 'transcript'}
+              onClick={() => onTabChange('transcript')}
+            />
+            <TabButton
+              icon={<List className="h-5 w-5" />}
+              label="Summary"
+              isActive={activeTab === 'summary'}
+              onClick={() => onTabChange('summary')}
+            />
+            <TabButton
+              icon={<CheckSquare className="h-5 w-5" />}
+              label="Tasks"
+              isActive={activeTab === 'tasks'}
+              onClick={() => onTabChange('tasks')}
+            />
+          </div>
+          
+          {/* Download tab on the right */}
+          <div>
+            <TabButton
+              icon={<Download className="h-5 w-5" />}
+              label="Download"
+              isActive={activeTab === 'download'}
+              onClick={handleDownload}
+            />
+          </div>
         </div>
       </div>
+
+        {/* Custom Modal */}
+      <Modal isOpen={isDownloadModalOpen} onClose={closeModal}>
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-2">Download Meeting Content</h2>
+          {isDownloading ? (
+            <div className="flex flex-col items-center justify-center py-4">
+              <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mb-2" />
+              <p>Preparing your download...</p>
+            </div>
+          ) : downloadComplete ? (
+            <div className="py-4">
+              <p className="text-green-600 mb-2">Download completed!</p>
+              <p className="text-sm text-gray-500">Check your downloads folder</p>
+            </div>
+          ) : null}
+        </div>
+      </Modal>
 
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h1 className="text-2xl font-bold mb-4">{meeting.title}</h1>
