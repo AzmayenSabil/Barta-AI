@@ -1,3 +1,15 @@
+### TO BUILD AND RUN THE APPLICATION
+
+## To Build
+```
+docker-compose build
+```
+
+## To Run
+```
+docker-compose up
+```
+
 # Bangla Speech-to-Text Pipeline with Meeting Analysis
 
 This architecture outlines a comprehensive solution for processing Bangla audio files and extracting meaningful information from meeting transcriptions.
