@@ -1,4 +1,6 @@
-# TO BUILD AND RUN THE APPLICATION
+# TO BUILD AND RUN THE APPLICATION USING DOCKER
+- Go to root directory
+- Run below commands
 
 ## To Build
 ```
