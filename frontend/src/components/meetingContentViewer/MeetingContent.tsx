@@ -1,5 +1,5 @@
-import React from 'react';
-import { FileText, List, CheckSquare, BarChart3, Users, ThumbsUp, Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { FileText, List, CheckSquare, BarChart3, Users, ThumbsUp, Loader2, Globe, Flag } from 'lucide-react';
 
 interface Meeting {
   id: number;
@@ -22,6 +22,36 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
   onTabChange,
   isProcessing,
 }) => {
+  const [showEnglish, setShowEnglish] = useState(false);
+
+  const keyPoints = {
+    bengali: [
+      "বাংলা, বাংলা-ইংরেজি মিশ্রিত কথোপকথনের জন্য উন্নত ট্রান্সক্রিপশন মডেলের প্রয়োজন।",
+      "ব্যবহারকারীর ফিডব্যাক গ্রহণ সহজ করার জন্য ১-ক্লিক রেটিং সিস্টেমের প্রস্তাব।",
+      "বানানের চ্যালেঞ্জ মোকাবিলার জন্য শক্তিশালী স্পেল-চেকিং সিস্টেমের প্রয়োজন।",
+      "মেম্বারশিপ কার্ডের মতো ফিচারের মাধ্যমে ব্যবহারকারীর সম্পৃক্ততা বাড়ানোর পরিকল্পনা।"
+    ],
+    english: [
+      "Need for advanced transcription models to handle Bangla and Bangla-English mixed conversations.",
+      "Proposal for 1-click rating system to simplify user feedback collection.",
+      "Need for robust spell-checking system to address spelling challenges.",
+      "Plan to increase user engagement through features like membership cards."
+    ]
+  };
+
+  const keyDecisions = {
+    bengali: [
+      "ফিডব্যাক সিস্টেমে ১-ক্লিক রেটিং অন্তর্ভুক্ত করার পরিকল্পনা।",
+      "রিয়েল-টাইম ট্রান্সক্রিপশন স্ক্রিন আরও ব্যবহারকারী-বান্ধব করে তোলার কাজ।",
+      "আঞ্চলিক উচ্চারণ ট্রান্সক্রিপশনের সঠিকতা নিশ্চিত করতে মডেল উন্নয়নের সিদ্ধান্ত।"
+    ],
+    english: [
+      "Plan to implement 1-click rating in the feedback system.",
+      "Work on making the real-time transcription screen more user-friendly.",
+      "Decision to improve model development for ensuring accurate regional pronunciation transcription."
+    ]
+  };
+
   if (!meeting) {
     return (
       <div className="text-center text-gray-600">
@@ -68,27 +98,6 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h1 className="text-2xl font-bold mb-4">{meeting.title}</h1>
         <div className="prose max-w-none">
-          {/* {activeTab === 'transcript' && (
-            <div className="whitespace-pre-wrap text-gray-600">
-              {meeting.transcript ? (
-                <div className="space-y-4">
-                  {meeting.transcript
-                    .split('\n')
-                    .map((line, index) => {
-                      const [speaker, text] = line.split(':');
-                      return (
-                        <div key={index} className="flex flex-col">
-                          <span className="font-semibold text-blue-600">{speaker.trim()}:</span>
-                          <span className="ml-4 text-gray-700">{text.trim()}</span>
-                        </div>
-                      );
-                    })}
-                </div>
-              ) : (
-                'No transcript available for this meeting.'
-              )}
-            </div>
-          )} */}
           {activeTab === 'transcript' && (
             <div className="whitespace-pre-wrap text-gray-600">
               {meeting.transcript ? (
@@ -97,7 +106,7 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
                     .split('\n')
                     .map((line, index) => {
                       const [speaker, text] = line.split(':');
-                      const speakerNumber = index % 2 === 0 ? 1 : 2; // Even index gets 2, odd index gets 1
+                      const speakerNumber = index % 2 === 0 ? 1 : 2;
                       return (
                         <div key={index} className="flex flex-col">
                           <span className="font-semibold text-blue-600">{`Speaker ${speakerNumber}:`}</span>
@@ -120,7 +129,7 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
                     <Users className="h-5 w-5 text-blue-600" />
                     <h3 className="font-semibold text-blue-900">Speakers</h3>
                   </div>
-                  <p className="text-sm text-blue-800">John (45%), Sarah (35%), Mike (20%)</p>
+                  <p className="text-sm text-blue-800">Speaker 1 (50%), Speaker 2 (50%)</p>
                 </div>
                 <div className="bg-green-50 p-4 rounded-lg">
                   <div className="flex items-center space-x-2 mb-2">
@@ -138,21 +147,32 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
                 </div>
               </div>
 
-              <div>
-                <h3 className="text-lg font-semibold mb-3">Key Points</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold">Key Points</h3>
+                  <button
+                    onClick={() => setShowEnglish(!showEnglish)}
+                    className="flex items-center space-x-2 px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-200 transition-colors"
+                  >
+                    <Globe className="h-4 w-4" />
+                    <span className="text-sm">{showEnglish ? 'Show Bengali' : 'Show English'}</span>
+                  </button>
+                </div>
                 <ul className="list-disc pl-6 space-y-2">
-                  <li>Q2 objectives defined and prioritized</li>
-                  <li>Team capacity assessment completed</li>
-                  <li>Project deadlines reviewed and adjusted</li>
+                  {(showEnglish ? keyPoints.english : keyPoints.bengali).map((point, index) => (
+                    <li key={index}>{point}</li>
+                  ))}
                 </ul>
               </div>
 
-              <div>
-                <h3 className="text-lg font-semibold mb-3">Key Decisions</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold">Key Decisions</h3>
+                </div>
                 <ul className="list-disc pl-6 space-y-2">
-                  <li>Increase team capacity by hiring two developers</li>
-                  <li>Postpone feature X launch to Q3</li>
-                  <li>Implement new sprint planning process</li>
+                  {(showEnglish ? keyDecisions.english : keyDecisions.bengali).map((decision, index) => (
+                    <li key={index}>{decision}</li>
+                  ))}
                 </ul>
               </div>
 
@@ -178,19 +198,24 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
               <h3 className="text-lg font-semibold">Action Items</h3>
               <div className="space-y-3">
                 <TaskItem
-                  name="Update project timeline"
-                  assignee="John Doe"
-                  deadline="2024-04-05"
+                  name="Optimize transcription model"
+                  assignee="Speaker 1"
+                  deadline="2025-03-08"
                 />
                 <TaskItem
-                  name="Schedule follow-up meeting"
-                  assignee="Sarah Smith"
-                  deadline="2024-04-03"
+                  name="Design feedback system UI"
+                  assignee="Speaker 1"
+                  deadline="2025-02-06"
                 />
                 <TaskItem
-                  name="Create technical documentation"
-                  assignee="Mike Johnson"
-                  deadline="2024-04-10"
+                  name="Integrate spell-checking feature"
+                  assignee="Speaker 2"
+                  deadline="2025-02-12"
+                />
+                <TaskItem
+                  name="Prepare architecture documentation"
+                  assignee="Speaker 2"
+                  deadline="2025-02-09"
                 />
               </div>
             </div>
@@ -201,25 +226,89 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
   );
 };
 
-const TaskItem: React.FC<{
+interface TaskItemProps {
   name: string;
   assignee: string;
   deadline: string;
-}> = ({ name, assignee, deadline }) => (
-  <div className="flex items-center space-x-4 p-3 hover:bg-gray-50 rounded-lg transition-colors">
-    <input
-      type="checkbox"
-      className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-    />
-    <div className="flex-1">
-      <p className="font-medium">{name}</p>
-      <p className="text-sm text-gray-600">Assigned to {assignee}</p>
+}
+
+const TaskItem: React.FC<TaskItemProps> = ({ name, assignee, deadline }) => {
+  const [priority, setPriority] = useState('medium');
+  const [selectedAssignee, setSelectedAssignee] = useState(assignee);
+  const [dueDate, setDueDate] = useState(deadline);
+  const [isEditingDate, setIsEditingDate] = useState(false);
+
+  const getPriorityColor = () => {
+    switch (priority) {
+      case 'high':
+        return 'bg-red-100 text-red-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  return (
+    <div className="flex items-center space-x-4 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+      <input
+        type="checkbox"
+        className="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+      />
+      <div className="flex-1 space-y-2">
+        <div className="flex items-center space-x-2">
+          <p className="font-medium">{name}</p>
+          <div className="flex items-center space-x-1">
+            <Flag className="h-4 w-4" />
+            <select
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+              className={`text-xs px-2 py-1 rounded-full ${getPriorityColor()} border-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+            >
+              <option value="high">High Priority</option>
+              <option value="medium">Medium Priority</option>
+              <option value="low">Low Priority</option>
+            </select>
+          </div>
+        </div>
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-600">Assigned to:</span>
+            <select
+              value={selectedAssignee}
+              onChange={(e) => setSelectedAssignee(e.target.value)}
+              className="text-sm border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+            >
+              <option value="Speaker 1">Speaker 1</option>
+              <option value="Speaker 2">Speaker 2</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div className="text-sm text-gray-500">
+        {isEditingDate ? (
+          <input
+            type="date"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+            onBlur={() => setIsEditingDate(false)}
+            className="border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+            autoFocus
+          />
+        ) : (
+          <div
+            onClick={() => setIsEditingDate(true)}
+            className="cursor-pointer hover:text-indigo-600"
+          >
+            Due {new Date(dueDate).toLocaleDateString()}
+          </div>
+        )}
+      </div>
     </div>
-    <div className="text-sm text-gray-500">
-      Due {new Date(deadline).toLocaleDateString()}
-    </div>
-  </div>
-);
+  );
+};
 
 const TabButton: React.FC<{
   icon: React.ReactNode;
@@ -232,11 +321,11 @@ const TabButton: React.FC<{
       isActive
         ? 'border-b-2 border-indigo-600 text-indigo-600'
         : 'text-gray-500 hover:text-gray-700'
-    }`}
+        }`}
     onClick={onClick}
   >
     {icon}
-    <span>{label}</span>
+    <span className="text-sm font-medium">{label}</span>
   </button>
 );
 
