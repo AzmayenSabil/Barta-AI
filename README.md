@@ -1,4 +1,4 @@
-### TO BUILD AND RUN THE APPLICATION
+# TO BUILD AND RUN THE APPLICATION
 
 ## To Build
 ```
@@ -9,6 +9,7 @@ docker-compose build
 ```
 docker-compose up
 ```
+----------
 
 # Bangla Speech-to-Text Pipeline with Meeting Analysis
 
