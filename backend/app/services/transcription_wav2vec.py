@@ -5,10 +5,10 @@ from torchaudio.transforms import Resample
 
 class Wav2Vec2TranscriptionService:
     def __init__(self):
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.processor = Wav2Vec2Processor.from_pretrained("tanmoyio/wav2vec2-large-xlsr-bengali")
-        self.model = Wav2Vec2ForCTC.from_pretrained("tanmoyio/wav2vec2-large-xlsr-bengali").to(self.device)
-        self.resampler = Resample(orig_freq=48_000, new_freq=16_000)
+        # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # self.processor = Wav2Vec2Processor.from_pretrained("tanmoyio/wav2vec2-large-xlsr-bengali")
+        # self.model = Wav2Vec2ForCTC.from_pretrained("tanmoyio/wav2vec2-large-xlsr-bengali").to(self.device)
+        # self.resampler = Resample(orig_freq=48_000, new_freq=16_000)
         print("Wav2Vec2 Model Loaded Successfully")
 
     def transcribe_audio(self, audio_path: str) -> str:

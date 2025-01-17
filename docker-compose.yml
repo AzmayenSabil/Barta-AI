@@ -22,9 +22,11 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
+      - ./backend:/app           # Mount backend code for live updates
+      - ./secrets.json:/app/secrets.json  # Map the secrets.json file from root
     environment:
       - PYTHONUNBUFFERED=1
+      - GOOGLE_CLOUD_CREDENTIALS=/app/secrets.json # Path inside the container
     networks:
       - app-network
 
