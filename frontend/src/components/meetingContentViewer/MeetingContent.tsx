@@ -8,9 +8,11 @@ import Tasks from './tabItems/Tasks';
 
 
 interface Transcript {
-  start_time: string;
-  end_time: string;
+  start_time: string; 
+  end_time: string; 
   dialogue: string;
+  speakerName?: string;
+  sentiment: string;
 }
 
 interface Meeting {
