@@ -14,7 +14,7 @@ class WhisperTranscriptionService:
         self.model_path = "shhossain/whisper-base-bn"
         self.max_length = 25 * 16000  # 25 seconds of audio at 16kHz
         self.overlap = 5 * 16000      # 5 seconds overlap between segments
-        # self._load_model()
+        self._load_model()
 
     def _load_model(self):
         print("Loading ASR model...")
