@@ -139,8 +139,8 @@ def save_audio_to_temp_file(audio_array, sample_rate):
 async def transcribe_with_google(
     file: UploadFile = File(...),
     language_code: str = Form("bn-BD"),
-    # enable_diarization: bool = Form(True),  # Changed default to True
-    enable_diarization: bool = Form(False),  # Changed default to True
+    enable_diarization: bool = Form(True),  # Changed default to True
+    # enable_diarization: bool = Form(False),  # Changed default to True
     min_speakers: Optional[int] = Form(3),
     max_speakers: Optional[int] = Form(3)
 ):

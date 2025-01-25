@@ -34,6 +34,7 @@ const Modal = ({ isOpen, onClose, children }) => {
   );
 };
 
+
 const MeetingContent: React.FC<MeetingContentProps> = ({
   meeting,
   activeTab,
@@ -44,6 +45,8 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadComplete, setDownloadComplete] = useState(false);
+  console.log('===================', meeting?.transcript) //
+
 
   const handleDownload = () => {
     setIsDownloadModalOpen(true);
