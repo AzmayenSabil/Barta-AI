@@ -62,7 +62,7 @@ class GoogleTranscriptionService:
             # Configure speaker diarization
             diarization_config = speech.SpeakerDiarizationConfig(
                 # enable_speaker_diarization=True,
-                enable_speaker_diarization=False,
+                enable_speaker_diarization=True,
                 min_speaker_count=min_speakers,
                 max_speaker_count=max_speakers
             )
