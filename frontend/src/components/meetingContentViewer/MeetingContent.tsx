@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
 import { FileText, List, CheckSquare, BarChart3, Users, ThumbsUp, Loader2, Globe, Flag, Download, X } from 'lucide-react';
 
+interface Transcript {
+  start_time: string;
+  end_time: string;
+  dialogue: string;
+}
+
 interface Meeting {
   id: number;
   title: string;
   date: string;
   duration: string;
-  transcript?: string;
+  transcript?: Transcript[];
 }
 
 interface MeetingContentProps {
@@ -62,7 +68,6 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
     setIsDownloading(false);
     setDownloadComplete(false);
   };
-
 
   const keyPoints = {
     bengali: [
@@ -148,7 +153,7 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
         </div>
       </div>
 
-        {/* Custom Modal */}
+      {/* Custom Modal */}
       <Modal isOpen={isDownloadModalOpen} onClose={closeModal}>
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Download Meeting Content</h2>
@@ -173,18 +178,15 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
             <div className="whitespace-pre-wrap text-gray-600">
               {meeting.transcript ? (
                 <div className="space-y-4">
-                  {meeting.transcript
-                    .split('\n')
-                    .map((line, index) => {
-                      const [speaker, text] = line.split(':');
-                      const speakerNumber = index % 2 === 0 ? 1 : 2;
-                      return (
-                        <div key={index} className="flex flex-col">
-                          <span className="font-semibold text-blue-600">{`Speaker ${speakerNumber}:`}</span>
-                          <span className="ml-4 text-gray-700">{text.trim()}</span>
-                        </div>
-                      );
-                    })}
+                  {meeting.transcript.map((entry, index) => {
+                    const speakerNumber = index % 2 === 0 ? 1 : 2;
+                    return (
+                      <div key={index} className="flex flex-col">
+                        <span className="font-semibold text-blue-600">{`Speaker ${speakerNumber}:`}</span>
+                        <span className="ml-4 text-gray-700">{entry.dialogue}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 'No transcript available for this meeting.'
@@ -264,6 +266,7 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
               </div>
             </div>
           )}
+
           {activeTab === 'tasks' && (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Action Items</h3>
@@ -296,6 +299,7 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
     </div>
   );
 };
+
 
 interface TaskItemProps {
   name: string;
