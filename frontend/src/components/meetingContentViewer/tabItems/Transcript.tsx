@@ -7,6 +7,7 @@ interface TranscriptEntry {
   end_time: string; 
   dialogue: string;
   speakerName?: string;
+  sentiment: string;
 }
 
 interface TranscriptProps {
