@@ -14,7 +14,8 @@ interface SummaryProps {
   speakers: Speaker[];
 }
 
-const Summary: React.FC<SummaryProps> = ({ keyPoints, keyDecisions, speakers }) => {
+const Summary: React.FC<SummaryProps> = ({ transcript, keyPoints, keyDecisions, speakers }) => {
+  console.log(transcript)
   const [showEnglish, setShowEnglish] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker | null>(null);

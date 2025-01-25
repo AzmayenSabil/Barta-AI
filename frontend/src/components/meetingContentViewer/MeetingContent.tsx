@@ -80,6 +80,7 @@ const calculateTalkTime = (transcripts) => {
 
 const MeetingContent: React.FC<MeetingContentProps> = ({
   meeting,
+  setMeetings,
   activeTab,
   onTabChange,
   isProcessing,
@@ -219,8 +220,9 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
               <Transcript 
                 transcript={meeting.transcript} 
                 audioSrc={meeting.audioUrl} 
+                setMeetings={setMeetings}
             />}
-            {activeTab === 'summary' && <Summary keyPoints={keyPoints} keyDecisions={keyDecisions} speakers={speakersData} />}
+            {activeTab === 'summary' && <Summary transcript={meeting.transcript} keyPoints={keyPoints} keyDecisions={keyDecisions} speakers={speakersData} />}
             {activeTab === 'tasks' && <Tasks />}
           </div>
         </div>

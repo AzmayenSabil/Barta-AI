@@ -138,95 +138,44 @@ def save_audio_to_temp_file(audio_array, sample_rate):
 @transcription_router.post("/google")
 async def transcribe_with_google(
     file: UploadFile = File(...),
-    language_code: str = Form("bn-BD"),
-    # enable_diarization: bool = Form(True),  # Changed default to True
-    enable_diarization: bool = Form(False),  # Changed default to True
-    min_speakers: Optional[int] = Form(3),
-    max_speakers: Optional[int] = Form(3)
+    language_code: str = Form("bn-BD")
 ):
     """
-    Endpoint for transcribing audio using Google Speech-to-Text API with speaker diarization.
-    
+    Endpoint for transcribing audio using Google Speech-to-Text API.
+
     Args:
         file: Audio file to transcribe
         language_code: Language code for transcription
-        enable_diarization: Whether to enable speaker diarization (default True)
-        min_speakers: Minimum number of speakers to detect
-        max_speakers: Maximum number of speakers to detect
     """
     temp_files = []
-    
+
     try:
         # Validate file type
-        if not file.filename.lower().endswith(('.mp3', '.wav', '.m4a', '.ogg')):
+        if not file.filename.lower().endswith((".mp3", ".wav", ".m4a", ".ogg")):
             raise HTTPException(
                 status_code=400,
                 detail="Unsupported file format. Please upload MP3, WAV, M4A, or OGG files."
-            )
-
-        # Validate speaker count parameters
-        if min_speakers < 1:
-            raise HTTPException(
-                status_code=400,
-                detail="min_speakers must be at least 1"
-            )
-        if max_speakers < min_speakers:
-            raise HTTPException(
-                status_code=400,
-                detail="max_speakers must be greater than or equal to min_speakers"
             )
 
         # Save uploaded file
         temp_path = save_temp_file(file)
         temp_files.append(temp_path)
 
-        # Preprocess the audio file
+        # Process the audio file using the updated GoogleTranscriptionService
         try:
-            audio_array, sample_rate = audio_preprocessor.preprocess(temp_path)
-            duration = len(audio_array) / sample_rate
-        except Exception as e:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Audio preprocessing failed: {str(e)}"
-            )
+            google_service = GoogleTranscriptionService()
+            transcript = google_service.process_audio(temp_path, language_code=language_code)
 
-        # Save preprocessed audio
-        try:
-            processed_audio_path = save_audio_to_temp_file(audio_array, sample_rate)
-            temp_files.append(processed_audio_path)
-        except Exception as e:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Failed to save processed audio: {str(e)}"
-            )
-
-        # Always use diarization for better results
-        try:
-            transcript = google_service.transcribe_audio_with_diarization(
-                processed_audio_path,
-                language_code=language_code,
-                min_speakers=min_speakers,
-                max_speakers=max_speakers
-            )
-            
-            # Format response for diarized transcript
+            # Format response
             response = {
                 "status": "success",
-                "diarized_transcript": transcript,
-                "audio_duration": duration,
-                "sample_rate": sample_rate,
-                "language": language_code,
-                "speakers": {
-                    "min": min_speakers,
-                    "max": max_speakers,
-                    "detected": len(set(utterance["speaker"] for utterance in transcript))
-                }
+                "transcript": transcript
             }
 
             return response
 
         except Exception as e:
-            print(f"Diarization error details: {str(e)}")  # Added for debugging
+            print(f"Transcription error details: {str(e)}")  # Added for debugging
             raise HTTPException(
                 status_code=500,
                 detail=f"Google transcription failed: {str(e)}"
