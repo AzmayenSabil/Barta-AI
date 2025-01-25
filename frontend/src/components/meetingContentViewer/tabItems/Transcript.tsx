@@ -1,23 +1,93 @@
-import React from 'react';
+import React, { useState } from 'react';
+import AudioPlayer from '../AudioPlayer';
+import { Timer } from 'lucide-react';
 
-interface TranscriptProps {
-  transcript?: { start_time: string; end_time: string; dialogue: string }[];
+interface TranscriptEntry {
+  start_time: string; 
+  end_time: string; 
+  dialogue: string;
+  speakerName?: string;
 }
 
-const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
+interface TranscriptProps {
+  transcript?: TranscriptEntry[]; 
+  audioSrc: string;
+}
+
+const Transcript: React.FC<TranscriptProps> = ({ transcript, audioSrc }) => {
+  const [editableTranscript, setEditableTranscript] = useState<TranscriptEntry[]>(
+    transcript?.map((entry, index) => ({
+      ...entry, 
+      speakerName: entry.speakerName || (index % 2 === 0 ? 'Speaker 1' : 'Speaker 2')
+    })) || []
+  );
+
+  const speakerNames = [
+    'Speaker 1', 
+    'Speaker 2', 
+    'John Doe', 
+    'Jane Smith', 
+    'Alex Johnson', 
+    'Emily Brown', 
+    'Michael Lee'
+  ];
+
+  const sentimentColors = {
+    positive: 'bg-green-100 text-green-800',
+    negative: 'bg-red-100 text-red-800',
+    neutral: 'bg-yellow-100 text-yellow-800'
+  };
+
+  const updateSpeakerName = (index: number, newName: string) => {
+    const updatedTranscript = [...editableTranscript];
+    updatedTranscript[index].speakerName = newName;
+    setEditableTranscript(updatedTranscript);
+  };
+
   if (!transcript) {
     return <div>No transcript available for this meeting.</div>;
   }
 
   return (
-    <div className="whitespace-pre-wrap text-gray-600">
-      <div className="space-y-4">
-        {transcript.map((entry, index) => {
-          const speakerNumber = index % 2 === 0 ? 1 : 2;
+    <div className="bg-white shadow-md rounded-lg p-6">
+      <div className="mb-4">
+        <AudioPlayer audioSrc={audioSrc} />
+      </div>
+      
+      <div className="transcript-container">
+        {editableTranscript.map((entry, index) => {
           return (
-            <div key={index} className="flex flex-col">
-              <span className="font-semibold text-blue-600">{`Speaker ${speakerNumber}:`}</span>
-              <span className="ml-4 text-gray-700">{entry.dialogue}</span>
+            <div 
+              key={index} 
+              className={`dialogue-entry p-2 ${index % 2 === 0 ? 'bg-blue-50' : 'bg-gray-50'} rounded-md mb-2 flex items-center`}
+            >
+              <div className="flex-grow">
+                <div className="flex items-center mb-2">
+                  <select 
+                    value={entry.speakerName}
+                    onChange={(e) => updateSpeakerName(index, e.target.value)}
+                    className="mr-2 p-1 border rounded"
+                  >
+                    {speakerNames.map(name => (
+                      <option key={name} value={name}>{name}</option>
+                    ))}
+                  </select>
+                  <div className="flex items-center bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                    <Timer className="w-3.5 h-3.5 mr-1.5" />
+                    <span>{entry.start_time} - {entry.end_time}</span>
+                  </div>
+                  <select
+                      value={entry.sentiment}
+                      onChange={(e) => updateSentiment(index, e.target.value as TranscriptEntry['sentiment'])}
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${sentimentColors[entry.sentiment || 'neutral']}`}
+                    >
+                      <option value="positive">Positive</option>
+                      <option value="neutral">Neutral</option>
+                      <option value="negative">Negative</option>
+                    </select>
+                </div>
+                <div>{entry.dialogue}</div>
+              </div>
             </div>
           );
         })}

@@ -10,6 +10,7 @@ interface TranscriptEntry {
   start_time: string;
   end_time: string;
   dialogue: string;
+  sentiment: string;
 }
 
 interface Meeting {
@@ -18,6 +19,7 @@ interface Meeting {
   date: string;
   duration: string;
   transcript?: TranscriptEntry[];
+  audioUrl: string;
 }
 
 const initialMeetings: Meeting[] = [
@@ -27,9 +29,10 @@ const initialMeetings: Meeting[] = [
     date: "January 10, 2025",
     duration: "90 minutes",
     transcript: [
-      { start_time: "00:00", end_time: "05:00", dialogue: "Let's focus on increasing market share." },
-      { start_time: "05:01", end_time: "10:00", dialogue: "We should prioritize customer feedback implementation." },
+      { start_time: "00:00", end_time: "05:00", dialogue: "Let's focus on increasing market share." , sentiment: "neutral"},
+      { start_time: "05:01", end_time: "10:00", dialogue: "We should prioritize customer feedback implementation.", sentiment: "negative" },
     ],
+    audioUrl: "src/audio/test_audio.mp3",
   },
   {
     id: 2,
@@ -37,9 +40,10 @@ const initialMeetings: Meeting[] = [
     date: "January 9, 2025",
     duration: "45 minutes",
     transcript: [
-      { start_time: "00:00", end_time: "02:30", dialogue: "Updates from the marketing team?" },
-      { start_time: "02:31", end_time: "05:00", dialogue: "We’ve launched the new campaign successfully." },
+      { start_time: "00:00", end_time: "02:30", dialogue: "Updates from the marketing team?", sentiment: "neutral" },
+      { start_time: "02:31", end_time: "05:00", dialogue: "We've launched the new campaign successfully." , sentiment: "positive"},
     ],
+    audioUrl: "src/audio/test_audio.mp3",
   },
 ];
 
