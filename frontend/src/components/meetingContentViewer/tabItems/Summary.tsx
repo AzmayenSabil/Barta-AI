@@ -1,18 +1,41 @@
 import React, { useState } from 'react';
-import { Globe, Users, ThumbsUp, BarChart3 } from 'lucide-react';
+import { Globe, Users, ThumbsUp, BarChart3, X } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './speakerInfo/dialog';
+
+interface Speaker {
+  name: string;
+  talkTime: string;
+  sentiment: string;
+}
 
 interface SummaryProps {
   keyPoints: { bengali: string[]; english: string[] };
   keyDecisions: { bengali: string[]; english: string[] };
+  speakers: Speaker[];
 }
 
-const Summary: React.FC<SummaryProps> = ({ keyPoints, keyDecisions }) => {
+const Summary: React.FC<SummaryProps> = ({ keyPoints, keyDecisions, speakers }) => {
   const [showEnglish, setShowEnglish] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker | null>(null);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedSpeaker(null);
+  };
+
+  const selectSpeaker = (speaker: Speaker) => {
+    setSelectedSpeaker(speaker);
+  };
 
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-blue-50 p-4 rounded-lg">
+        <div
+          className="bg-blue-50 p-4 rounded-lg cursor-pointer hover:bg-blue-100 transition"
+          onClick={openModal}
+        >
           <div className="flex items-center space-x-2 mb-2">
             <Users className="h-5 w-5 text-blue-600" />
             <h3 className="font-semibold text-blue-900">Speakers</h3>
@@ -61,6 +84,54 @@ const Summary: React.FC<SummaryProps> = ({ keyPoints, keyDecisions }) => {
           ))}
         </ul>
       </div>
+
+      {/* Modal for speakers */}
+      <Dialog open={isModalOpen} onOpenChange={closeModal}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Speakers</DialogTitle>
+          </DialogHeader>
+          <div className="overflow-auto max-h-96">
+            {!selectedSpeaker ? (
+              <table className="table-auto w-full text-sm">
+                <thead>
+                  <tr>
+                    <th className="text-left p-2">Name</th>
+                    <th className="text-left p-2">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {speakers.map((speaker, index) => (
+                    <tr key={index} className="hover:bg-gray-100">
+                      <td className="p-2">{speaker.name}</td>
+                      <td className="p-2">
+                        <button
+                          className="text-blue-600 hover:underline"
+                          onClick={() => selectSpeaker(speaker)}
+                        >
+                          View Details
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <div>
+                <h3 className="text-lg font-semibold mb-4">{selectedSpeaker.name}</h3>
+                <p className="mb-2"><strong>Talk Time:</strong> {selectedSpeaker.talkTime}</p>
+                <p className="mb-2"><strong>Sentiment:</strong> {selectedSpeaker.sentiment}</p>
+                <button
+                  className="text-blue-600 hover:underline"
+                  onClick={() => setSelectedSpeaker(null)}
+                >
+                  Back to List
+                </button>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -75,6 +75,11 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
     setDownloadComplete(false);
   };
 
+  const speakersData = [
+    { name: 'Speaker 1', talkTime: '2 hours', sentiment: 'Positive' },
+    { name: 'Speaker 2', talkTime: '1.5 hours', sentiment: 'Neutral' },
+  ];
+
   const keyPoints = {
     bengali: [
       "বাংলা, বাংলা-ইংরেজি মিশ্রিত কথোপকথনের জন্য উন্নত ট্রান্সক্রিপশন মডেলের প্রয়োজন।",
@@ -182,7 +187,7 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
         <div className="prose max-w-none">
           <div>
             {activeTab === 'transcript' && <Transcript transcript={meeting.transcript} />}
-            {activeTab === 'summary' && <Summary keyPoints={keyPoints} keyDecisions={keyDecisions} />}
+            {activeTab === 'summary' && <Summary keyPoints={keyPoints} keyDecisions={keyDecisions} speakers={speakersData}/>}
             {activeTab === 'tasks' && <Tasks />}
           </div>
         </div>
