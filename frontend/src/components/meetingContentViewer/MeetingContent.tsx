@@ -6,10 +6,12 @@ import Summary from './tabItems/Summary';
 import Tasks from './tabItems/Tasks';
 
 interface Transcript {
-  start_time: string;
-  end_time: string;
+  start_time: string; 
+  end_time: string; 
   dialogue: string;
   name: string;
+  speakerName?: string;
+  sentiment: string;
 }
 
 interface Meeting {
@@ -18,6 +20,7 @@ interface Meeting {
   date: string;
   duration: string;
   transcript?: Transcript[];
+  audioUrl?: string;
 }
 
 interface MeetingContentProps {
@@ -212,7 +215,11 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
         <h1 className="text-2xl font-bold mb-4">{meeting.title}</h1>
         <div className="prose max-w-none">
           <div>
-            {activeTab === 'transcript' && <Transcript transcript={meeting.transcript} />}
+            {activeTab === 'transcript' && 
+              <Transcript 
+                transcript={meeting.transcript} 
+                audioSrc={meeting.audioUrl} 
+            />}
             {activeTab === 'summary' && <Summary keyPoints={keyPoints} keyDecisions={keyDecisions} speakers={speakersData} />}
             {activeTab === 'tasks' && <Tasks />}
           </div>

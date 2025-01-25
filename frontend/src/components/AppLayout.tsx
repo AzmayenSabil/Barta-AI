@@ -10,6 +10,7 @@ interface TranscriptEntry {
   start_time: string;
   end_time: string;
   dialogue: string;
+  sentiment: string;
 }
 
 interface Meeting {
@@ -18,6 +19,7 @@ interface Meeting {
   date: string;
   duration: string;
   transcript?: TranscriptEntry[];
+  audioUrl: string;
 }
 
 const initialMeetings: Meeting[] = [
@@ -40,8 +42,9 @@ const initialMeetings: Meeting[] = [
         dialogue: "We should prioritize customer feedback implementation.",
         name: "Bob",
         sentiment: "neutral",
-      },
+      }
     ],
+    audioUrl: "src/audio/test_audio.mp3",
   },
   {
     id: 2,
@@ -65,6 +68,7 @@ const initialMeetings: Meeting[] = [
       },
     ],
     overall_sentiment: "positive",
+    audioUrl: "src/audio/test_audio.mp3",
   },
 ];
 
