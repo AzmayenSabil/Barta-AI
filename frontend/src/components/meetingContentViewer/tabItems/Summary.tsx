@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Globe, Users, ThumbsUp, BarChart3, X } from 'lucide-react';
+import { Globe, Users, ThumbsUp, BarChart3 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './speakerInfo/dialog';
 
 interface Speaker {
@@ -29,9 +29,28 @@ const Summary: React.FC<SummaryProps> = ({ keyPoints, keyDecisions, speakers }) 
     setSelectedSpeaker(speaker);
   };
 
+  // Calculate speaker distribution
+  const totalSpeakers = speakers.length;
+  const speakerDistribution = speakers
+    .map((speaker) => `${speaker.name} (${(100 / totalSpeakers).toFixed(0)}%)`)
+    .join(', ');
+
+  // Calculate sentiment distribution
+  const sentimentCounts = speakers.reduce(
+    (acc, { sentiment }) => {
+      acc[sentiment] = (acc[sentiment] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
+  const sentimentDistribution = Object.entries(sentimentCounts)
+    .map(([sentiment, count]) => `${sentiment.charAt(0).toUpperCase() + sentiment.slice(1)} (${((count / totalSpeakers) * 100).toFixed(0)}%)`)
+    .join(', ');
+
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-3 gap-4">
+        {/* Dynamic Speakers Card */}
         <div
           className="bg-blue-50 p-4 rounded-lg cursor-pointer hover:bg-blue-100 transition"
           onClick={openModal}
@@ -40,15 +59,19 @@ const Summary: React.FC<SummaryProps> = ({ keyPoints, keyDecisions, speakers }) 
             <Users className="h-5 w-5 text-blue-600" />
             <h3 className="font-semibold text-blue-900">Speakers</h3>
           </div>
-          <p className="text-sm text-blue-800">Speaker 1 (50%), Speaker 2 (50%)</p>
+          <p className="text-sm text-blue-800">{speakerDistribution}</p>
         </div>
+
+        {/* Dynamic Sentiment Card */}
         <div className="bg-green-50 p-4 rounded-lg">
           <div className="flex items-center space-x-2 mb-2">
             <ThumbsUp className="h-5 w-5 text-green-600" />
             <h3 className="font-semibold text-green-900">Sentiment</h3>
           </div>
-          <p className="text-sm text-green-800">Positive (75%), Neutral (20%), Negative (5%)</p>
+          <p className="text-sm text-green-800">{sentimentDistribution}</p>
         </div>
+
+        {/* Static Engagement Card */}
         <div className="bg-purple-50 p-4 rounded-lg">
           <div className="flex items-center space-x-2 mb-2">
             <BarChart3 className="h-5 w-5 text-purple-600" />
@@ -58,6 +81,7 @@ const Summary: React.FC<SummaryProps> = ({ keyPoints, keyDecisions, speakers }) 
         </div>
       </div>
 
+      {/* Key Points and Key Decisions Sections */}
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Key Points</h3>
@@ -85,7 +109,7 @@ const Summary: React.FC<SummaryProps> = ({ keyPoints, keyDecisions, speakers }) 
         </ul>
       </div>
 
-      {/* Modal for speakers */}
+      {/* Speaker Modal */}
       <Dialog open={isModalOpen} onOpenChange={closeModal}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
@@ -119,8 +143,12 @@ const Summary: React.FC<SummaryProps> = ({ keyPoints, keyDecisions, speakers }) 
             ) : (
               <div>
                 <h3 className="text-lg font-semibold mb-4">{selectedSpeaker.name}</h3>
-                <p className="mb-2"><strong>Talk Time:</strong> {selectedSpeaker.talkTime}</p>
-                <p className="mb-2"><strong>Sentiment:</strong> {selectedSpeaker.sentiment}</p>
+                <p className="mb-2">
+                  <strong>Talk Time:</strong> {selectedSpeaker.talkTime}
+                </p>
+                <p className="mb-2">
+                  <strong>Sentiment:</strong> {selectedSpeaker.sentiment}
+                </p>
                 <button
                   className="text-blue-600 hover:underline"
                   onClick={() => setSelectedSpeaker(null)}

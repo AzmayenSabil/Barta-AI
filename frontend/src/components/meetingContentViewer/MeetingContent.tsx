@@ -5,12 +5,11 @@ import Transcript from './tabItems/Transcript';
 import Summary from './tabItems/Summary';
 import Tasks from './tabItems/Tasks';
 
-
-
 interface Transcript {
   start_time: string;
   end_time: string;
   dialogue: string;
+  name: string;
 }
 
 interface Meeting {
@@ -46,6 +45,36 @@ const Modal = ({ isOpen, onClose, children }) => {
   );
 };
 
+const calculateTalkTime = (transcripts) => {
+  console.log(transcripts);
+  const speakerData = {};
+
+  transcripts.forEach((item) => {
+    const { name, start_time, end_time, sentiment } = item;
+
+    // Calculate duration in minutes
+    const [startMinutes, startSeconds] = start_time.split(':').map(Number);
+    const [endMinutes, endSeconds] = end_time.split(':').map(Number);
+
+    const startInSeconds = startMinutes * 60 + startSeconds;
+    const endInSeconds = endMinutes * 60 + endSeconds;
+    const durationInMinutes = (endInSeconds - startInSeconds) / 60;
+
+    if (!speakerData[name]) {
+      speakerData[name] = { talkTime: 0, sentiments: [] };
+    }
+
+    speakerData[name].talkTime += durationInMinutes;
+    speakerData[name].sentiments.push(sentiment);
+  });
+
+  return Object.entries(speakerData).map(([name, data]) => ({
+    name,
+    talkTime: `${Math.round(data.talkTime)} minutes`,
+    sentiment: data.sentiments.join(', '), // Combines all sentiments as a string
+  }));
+};
+
 const MeetingContent: React.FC<MeetingContentProps> = ({
   meeting,
   activeTab,
@@ -75,10 +104,7 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
     setDownloadComplete(false);
   };
 
-  const speakersData = [
-    { name: 'Speaker 1', talkTime: '2 hours', sentiment: 'Positive' },
-    { name: 'Speaker 2', talkTime: '1.5 hours', sentiment: 'Neutral' },
-  ];
+  const speakersData = meeting?.transcript ? calculateTalkTime(meeting.transcript) : [];
 
   const keyPoints = {
     bengali: [
@@ -151,7 +177,7 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
               onClick={() => onTabChange('tasks')}
             />
           </div>
-          
+
           {/* Download tab on the right */}
           <div>
             <TabButton
@@ -187,7 +213,7 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
         <div className="prose max-w-none">
           <div>
             {activeTab === 'transcript' && <Transcript transcript={meeting.transcript} />}
-            {activeTab === 'summary' && <Summary keyPoints={keyPoints} keyDecisions={keyDecisions} speakers={speakersData}/>}
+            {activeTab === 'summary' && <Summary keyPoints={keyPoints} keyDecisions={keyDecisions} speakers={speakersData} />}
             {activeTab === 'tasks' && <Tasks />}
           </div>
         </div>
