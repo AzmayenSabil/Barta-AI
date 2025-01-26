@@ -9,7 +9,7 @@ class Wav2Vec2TranscriptionService:
         # self.processor = Wav2Vec2Processor.from_pretrained("tanmoyio/wav2vec2-large-xlsr-bengali")
         # self.model = Wav2Vec2ForCTC.from_pretrained("tanmoyio/wav2vec2-large-xlsr-bengali").to(self.device)
         # self.resampler = Resample(orig_freq=48_000, new_freq=16_000)
-        print("Wav2Vec2 Model Loaded Successfully")
+        print("----")
 
     def transcribe_audio(self, audio_path: str) -> str:
         try:
