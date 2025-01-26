@@ -67,7 +67,7 @@ const MeetingContent = ({
   const [isFetching, setIsFetching] = useState(false);
 
   useEffect(() => {
-    if (meeting?.transcript) {
+    if (meeting?.transcript && (meeting?.id !== 1 || meeting?.id !== 2)) {
       setIsFetching(true);
       axios
         .post("http://localhost:8000/api/summary/process-meeting", meeting.transcript)

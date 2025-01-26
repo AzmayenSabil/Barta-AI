@@ -32,3 +32,6 @@ bartaai-key.pem
 /backend/hackathon
 /backend/models
 frontend/package-lock.json
+frontend/package.json
+frontend/package-lock.json
+frontend/package.json

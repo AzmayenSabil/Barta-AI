@@ -44,7 +44,7 @@ const initialMeetings: Meeting[] = [
         sentiment: "neutral",
       }
     ],
-    audioUrl: "src/audio/test_audio.mp3",
+    audioUrl: "src/audio/test_audio_3_meeting-1stHalf.mp3",
   },
   {
     id: 2,
@@ -68,7 +68,7 @@ const initialMeetings: Meeting[] = [
       },
     ],
     overall_sentiment: "positive",
-    audioUrl: "src/audio/test_audio.mp3",
+    audioUrl: "src/audio/test_audio_3_meeting-1stHalf.mp3",
   },
 ];
 
