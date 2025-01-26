@@ -23,53 +23,53 @@ interface Meeting {
 }
 
 const initialMeetings: Meeting[] = [
-  // {
-  //   id: 1,
-  //   title: "Q2 Strategy Session",
-  //   date: "2025-01-10",
-  //   duration: "90 minutes",
-  //   transcript: [
-  //     {
-  //       start_time: "00:00",
-  //       end_time: "05:00",
-  //       dialogue: "Let's focus on increasing market share.",
-  //       name: "Alice",
-  //       sentiment: "positive",
-  //     },
-  //     {
-  //       start_time: "05:01",
-  //       end_time: "10:00",
-  //       dialogue: "We should prioritize customer feedback implementation.",
-  //       name: "Bob",
-  //       sentiment: "neutral",
-  //     }
-  //   ],
-  //   audioUrl: "src/audio/test_audio.mp3",
-  // },
-  // {
-  //   id: 2,
-  //   title: "Weekly Team Sync",
-  //   date: "2025-01-09",
-  //   duration: "45 minutes",
-  //   transcript: [
-  //     {
-  //       start_time: "00:00",
-  //       end_time: "02:30",
-  //       dialogue: "Updates from the marketing team?",
-  //       name: "Charlie",
-  //       sentiment: "neutral",
-  //     },
-  //     {
-  //       start_time: "02:31",
-  //       end_time: "05:00",
-  //       dialogue: "We’ve launched the new campaign successfully.",
-  //       name: "Diana",
-  //       sentiment: "positive",
-  //     },
-  //   ],
-  //   overall_sentiment: "positive",
-  //   audioUrl: "src/audio/test_audio.mp3",
-  // },
+  {
+    id: 1,
+    title: "Q2 Strategy Session",
+    date: "2025-01-10",
+    duration: "90 minutes",
+    transcript: [
+      {
+        start_time: "00:00",
+        end_time: "05:00",
+        dialogue: "Let's focus on increasing market share.",
+        name: "Alice",
+        sentiment: "positive",
+      },
+      {
+        start_time: "05:01",
+        end_time: "10:00",
+        dialogue: "We should prioritize customer feedback implementation.",
+        name: "Bob",
+        sentiment: "neutral",
+      }
+    ],
+    audioUrl: "src/audio/test_audio.mp3",
+  },
+  {
+    id: 2,
+    title: "Weekly Team Sync",
+    date: "2025-01-09",
+    duration: "45 minutes",
+    transcript: [
+      {
+        start_time: "00:00",
+        end_time: "02:30",
+        dialogue: "Updates from the marketing team?",
+        name: "Charlie",
+        sentiment: "neutral",
+      },
+      {
+        start_time: "02:31",
+        end_time: "05:00",
+        dialogue: "We’ve launched the new campaign successfully.",
+        name: "Diana",
+        sentiment: "positive",
+      },
+    ],
+    overall_sentiment: "positive",
+    audioUrl: "src/audio/test_audio.mp3",
+  },
 ];
 
 

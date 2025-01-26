@@ -1,24 +1,10 @@
-import React, { useState } from 'react';
-import { Globe, Users, ThumbsUp, BarChart3 } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './speakerInfo/dialog';
+import React, { useState } from "react";
+import { Globe, Users, ThumbsUp, BarChart3 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./speakerInfo/dialog";
 
-interface Speaker {
-  name: string;
-  talkTime: string;
-  sentiment: string;
-}
-
-interface SummaryProps {
-  keyPoints: { bengali: string[]; english: string[] };
-  keyDecisions: { bengali: string[]; english: string[] };
-  speakers: Speaker[];
-}
-
-const Summary: React.FC<SummaryProps> = ({ transcript, keyPoints, keyDecisions, speakers }) => {
-  console.log(transcript)
-  const [showEnglish, setShowEnglish] = useState(false);
+const Summary = ({ summary, speakers }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedSpeaker, setSelectedSpeaker] = useState<Speaker | null>(null);
+  const [selectedSpeaker, setSelectedSpeaker] = useState(null);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => {
@@ -26,86 +12,61 @@ const Summary: React.FC<SummaryProps> = ({ transcript, keyPoints, keyDecisions, 
     setSelectedSpeaker(null);
   };
 
-  const selectSpeaker = (speaker: Speaker) => {
-    setSelectedSpeaker(speaker);
-  };
+  const selectSpeaker = (speaker) => setSelectedSpeaker(speaker);
 
-  // Calculate speaker distribution
+  // Render speaker distribution
   const totalSpeakers = speakers.length;
   const speakerDistribution = speakers
-    .map((speaker) => `${speaker.name} (${(100 / totalSpeakers).toFixed(0)}%)`)
-    .join(', ');
+    .map((speaker) => `${speaker.name} (${((100 / totalSpeakers) || 0).toFixed(0)}%)`)
+    .join(", ");
 
   // Calculate sentiment distribution
-  const sentimentCounts = speakers.reduce(
-    (acc, { sentiment }) => {
-      acc[sentiment] = (acc[sentiment] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>
-  );
+  const sentimentCounts = speakers.reduce((acc, { sentiment }) => {
+    acc[sentiment] = (acc[sentiment] || 0) + 1;
+    return acc;
+  }, {});
   const sentimentDistribution = Object.entries(sentimentCounts)
-    .map(([sentiment, count]) => `${sentiment.charAt(0).toUpperCase() + sentiment.slice(1)} (${((count / totalSpeakers) * 100).toFixed(0)}%)`)
-    .join(', ');
+    .map(([sentiment, count]) => `${sentiment} (${((count / totalSpeakers) * 100 || 0).toFixed(0)}%)`)
+    .join(", ");
 
   return (
     <div className="space-y-8">
+      {/* Summary Header */}
       <div className="grid grid-cols-3 gap-4">
-        {/* Dynamic Speakers Card */}
-        <div
-          className="bg-blue-50 p-4 rounded-lg cursor-pointer hover:bg-blue-100 transition"
-          onClick={openModal}
-        >
+        {/* Speaker Distribution */}
+        <div className="bg-blue-50 p-4 rounded-lg cursor-pointer hover:bg-blue-100 transition" onClick={openModal}>
           <div className="flex items-center space-x-2 mb-2">
             <Users className="h-5 w-5 text-blue-600" />
             <h3 className="font-semibold text-blue-900">Speakers</h3>
           </div>
-          <p className="text-sm text-blue-800">{speakerDistribution}</p>
+          <p className="text-sm text-blue-800">{speakerDistribution || "No data available"}</p>
         </div>
 
-        {/* Dynamic Sentiment Card */}
+        {/* Sentiment Distribution */}
         <div className="bg-green-50 p-4 rounded-lg">
           <div className="flex items-center space-x-2 mb-2">
             <ThumbsUp className="h-5 w-5 text-green-600" />
             <h3 className="font-semibold text-green-900">Sentiment</h3>
           </div>
-          <p className="text-sm text-green-800">{sentimentDistribution}</p>
+          <p className="text-sm text-green-800">{sentimentDistribution || "No data available"}</p>
         </div>
 
-        {/* Static Engagement Card */}
+        {/* Engagement Placeholder */}
         <div className="bg-purple-50 p-4 rounded-lg">
           <div className="flex items-center space-x-2 mb-2">
             <BarChart3 className="h-5 w-5 text-purple-600" />
             <h3 className="font-semibold text-purple-900">Engagement</h3>
           </div>
-          <p className="text-sm text-purple-800">High participation, 85% engagement rate</p>
+          <p className="text-sm text-purple-800">High engagement, 85% participation</p>
         </div>
       </div>
 
-      {/* Key Points and Key Decisions Sections */}
+      {/* Render Summary Sections */}
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold">Key Points</h3>
-          <button
-            onClick={() => setShowEnglish(!showEnglish)}
-            className="flex items-center space-x-2 px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-200 transition-colors"
-          >
-            <Globe className="h-4 w-4" />
-            <span className="text-sm">{showEnglish ? 'Show Bengali' : 'Show English'}</span>
-          </button>
-        </div>
+        <h3 className="text-lg font-semibold">Meeting Summary</h3>
         <ul className="list-disc pl-6 space-y-2">
-          {(showEnglish ? keyPoints.english : keyPoints.bengali).map((point, index) => (
-            <li key={index}>{point}</li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Key Decisions</h3>
-        <ul className="list-disc pl-6 space-y-2">
-          {(showEnglish ? keyDecisions.english : keyDecisions.bengali).map((decision, index) => (
-            <li key={index}>{decision}</li>
+          {summary.map((point, index) => (
+            <li key={index}>{point || "No data available"}</li>
           ))}
         </ul>
       </div>

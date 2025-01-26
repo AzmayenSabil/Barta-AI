@@ -30,7 +30,7 @@ model = AutoModelForCausalLM.from_pretrained(
     repetition_penalty=1.15
 )
 
-def generate_action_items(transcript_text):
+def generate_action_items_array(transcript_text):
     prompt = f"""<s>[INST] 
 নিচের মিটিং ট্রান্সক্রিপ্ট বিশ্লেষণ করে কর্মপরিকল্পনা তৈরি করুন বাংলা ভাষায়:
 {transcript_text}
@@ -44,9 +44,15 @@ def generate_action_items(transcript_text):
     
     inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
     outputs = model.generate(**inputs, max_new_tokens=700)
-    return tokenizer.decode(outputs[0], skip_special_tokens=True)
+    action_items = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
-def generate_meeting_summary(transcript_text):
+    # Split action items into an array by newlines
+    action_items_array = re.split(r"\n- ", action_items)
+    action_items_array = [item.strip() for item in action_items_array if item.strip()]
+    
+    return action_items_array
+
+def generate_meeting_summary_array(transcript_text):
     prompt = f"""<s>[INST] 
 মিটিং ট্রান্সক্রিপ্ট বিশ্লেষণ করে একটি বিস্তারিত সারাংশ তৈরি করুন বাংলা ভাষায়:
 {transcript_text}
@@ -63,18 +69,14 @@ def generate_meeting_summary(transcript_text):
     outputs = model.generate(**inputs, max_new_tokens=1000)
     summary = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
-    # Format the summary output for clarity
-    formatted_summary = "\n=== Meeting Summary ===\n"
-    formatted_summary += "\n১. প্রধান আলোচ্য বিষয়:\n"
-    formatted_summary += extract_section(summary, "প্রধান আলোচ্য বিষয়")
-    formatted_summary += "\n\n২. গৃহীত সিদ্ধান্তসমূহ:\n"
-    formatted_summary += extract_section(summary, "গৃহীত সিদ্ধান্তসমূহ")
-    formatted_summary += "\n\n৩. সামগ্রিক অনুভূতি (ইতিবাচক/নিরপেক্ষ/নেতিবাচক) সাথে আত্মবিশ্বাস স্কোর:\n"
-    formatted_summary += extract_section(summary, "সামগ্রিক অনুভূতি")
-    formatted_summary += "\n\n৪. অংশগ্রহণকারীদের সম্পৃক্ততা বিশ্লেষণ:\n"
-    formatted_summary += extract_section(summary, "অংশগ্রহণকারীদের সম্পৃক্ততা বিশ্লেষণ")
-
-    return formatted_summary
+    # Split the summary into sections and return as an array
+    summary_array = [
+        extract_section(summary, "প্রধান আলোচ্য বিষয়"),
+        extract_section(summary, "গৃহীত সিদ্ধান্তসমূহ"),
+        extract_section(summary, "সামগ্রিক অনুভূতি"),
+        extract_section(summary, "অংশগ্রহণকারীদের সম্পৃক্ততা বিশ্লেষণ")
+    ]
+    return summary_array
 
 def extract_section(summary, section_title):
     # Helper function to extract specific sections from the summary
@@ -84,22 +86,22 @@ def extract_section(summary, section_title):
 
 def process_meeting_summary(transcript):
     """
-    Process the meeting transcript to generate a summary and action items.
+    Process the meeting transcript to generate a summary and action items as arrays.
 
     Args:
         transcript (List[Dict]): List of transcript entries.
 
     Returns:
-        Dict: Summary and action items.
+        Dict: Summary and action items as arrays.
     """
     # Combine all text for processing
     full_text = "\n".join([f"{seg['dialogue']}" for seg in transcript])
 
     # Generate summary and action items
-    meeting_summary = generate_meeting_summary(full_text)
-    action_items = generate_action_items(full_text)
+    meeting_summary_array = generate_meeting_summary_array(full_text)
+    action_items_array = generate_action_items_array(full_text)
 
     return {
-        "summary": meeting_summary,
-        "action_items": action_items
+        "summary": meeting_summary_array,
+        "action_items": action_items_array
     }

@@ -1,34 +1,10 @@
-import React, { useState } from 'react';
-import { FileText, List, CheckSquare, BarChart3, Users, ThumbsUp, Loader2, Globe, Flag, Download, X } from 'lucide-react';
-import TabButton from './TabButton'; // Adjust the path to where TabButton is located
-import Transcript from './tabItems/Transcript';
-import Summary from './tabItems/Summary';
-import Tasks from './tabItems/Tasks';
-
-interface Transcript {
-  start_time: string; 
-  end_time: string; 
-  dialogue: string;
-  name: string;
-  speakerName?: string;
-  sentiment: string;
-}
-
-interface Meeting {
-  id: number;
-  title: string;
-  date: string;
-  duration: string;
-  transcript?: Transcript[];
-  audioUrl?: string;
-}
-
-interface MeetingContentProps {
-  meeting?: Meeting;
-  activeTab: string;
-  onTabChange: (tab: string) => void;
-  isProcessing: boolean;
-}
+import React, { useState, useEffect } from "react";
+import { FileText, List, CheckSquare, Download, Loader2, X } from "lucide-react";
+import TabButton from "./TabButton";
+import Transcript from "./tabItems/Transcript";
+import Summary from "./tabItems/Summary";
+import Tasks from "./tabItems/Tasks";
+import axios from "axios";
 
 const Modal = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
@@ -49,15 +25,13 @@ const Modal = ({ isOpen, onClose, children }) => {
 };
 
 const calculateTalkTime = (transcripts) => {
-  console.log(transcripts);
   const speakerData = {};
 
   transcripts.forEach((item) => {
     const { name, start_time, end_time, sentiment } = item;
 
-    // Calculate duration in minutes
-    const [startMinutes, startSeconds] = start_time.split(':').map(Number);
-    const [endMinutes, endSeconds] = end_time.split(':').map(Number);
+    const [startMinutes, startSeconds] = start_time.split(":").map(Number);
+    const [endMinutes, endSeconds] = end_time.split(":").map(Number);
 
     const startInSeconds = startMinutes * 60 + startSeconds;
     const endInSeconds = endMinutes * 60 + endSeconds;
@@ -74,28 +48,51 @@ const calculateTalkTime = (transcripts) => {
   return Object.entries(speakerData).map(([name, data]) => ({
     name,
     talkTime: `${Math.round(data.talkTime)} minutes`,
-    sentiment: data.sentiments.join(', '), // Combines all sentiments as a string
+    sentiment: data.sentiments.join(", "),
   }));
 };
 
-const MeetingContent: React.FC<MeetingContentProps> = ({
+const MeetingContent = ({
   meeting,
   setMeetings,
   activeTab,
   onTabChange,
   isProcessing,
 }) => {
-  const [showEnglish, setShowEnglish] = useState(false);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadComplete, setDownloadComplete] = useState(false);
+  const [summary, setSummary] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
+
+  useEffect(() => {
+    if (meeting?.transcript) {
+      setIsFetching(true);
+      axios
+        .post("http://localhost:8000/api/summary/process-meeting", meeting.transcript)
+        .then((response) => {
+          if (response.data.status === "success") {
+            setSummary(response.data.data.summary || []);
+            setTasks(response.data.data.action_items || []);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching summary and tasks:", error);
+          setSummary(["Error fetching summary"]);
+          setTasks(["Error fetching tasks"]);
+        })
+        .finally(() => {
+          setIsFetching(false);
+        });
+    }
+  }, [meeting?.transcript]);
 
   const handleDownload = () => {
     setIsDownloadModalOpen(true);
     setIsDownloading(true);
     setDownloadComplete(false);
 
-    // Simulate download process
     setTimeout(() => {
       setIsDownloading(false);
       setDownloadComplete(true);
@@ -108,35 +105,9 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
     setDownloadComplete(false);
   };
 
-  const speakersData = meeting?.transcript ? calculateTalkTime(meeting.transcript) : [];
-
-  const keyPoints = {
-    bengali: [
-      "বাংলা, বাংলা-ইংরেজি মিশ্রিত কথোপকথনের জন্য উন্নত ট্রান্সক্রিপশন মডেলের প্রয়োজন।",
-      "ব্যবহারকারীর ফিডব্যাক গ্রহণ সহজ করার জন্য ১-ক্লিক রেটিং সিস্টেমের প্রস্তাব।",
-      "বানানের চ্যালেঞ্জ মোকাবিলার জন্য শক্তিশালী স্পেল-চেকিং সিস্টেমের প্রয়োজন।",
-      "মেম্বারশিপ কার্ডের মতো ফিচারের মাধ্যমে ব্যবহারকারীর সম্পৃক্ততা বাড়ানোর পরিকল্পনা।"
-    ],
-    english: [
-      "Need for advanced transcription models to handle Bangla and Bangla-English mixed conversations.",
-      "Proposal for 1-click rating system to simplify user feedback collection.",
-      "Need for robust spell-checking system to address spelling challenges.",
-      "Plan to increase user engagement through features like membership cards."
-    ]
-  };
-
-  const keyDecisions = {
-    bengali: [
-      "ফিডব্যাক সিস্টেমে ১-ক্লিক রেটিং অন্তর্ভুক্ত করার পরিকল্পনা।",
-      "রিয়েল-টাইম ট্রান্সক্রিপশন স্ক্রিন আরও ব্যবহারকারী-বান্ধব করে তোলার কাজ।",
-      "আঞ্চলিক উচ্চারণ ট্রান্সক্রিপশনের সঠিকতা নিশ্চিত করতে মডেল উন্নয়নের সিদ্ধান্ত।"
-    ],
-    english: [
-      "Plan to implement 1-click rating in the feedback system.",
-      "Work on making the real-time transcription screen more user-friendly.",
-      "Decision to improve model development for ensuring accurate regional pronunciation transcription."
-    ]
-  };
+  const speakersData = meeting?.transcript
+    ? calculateTalkTime(meeting.transcript)
+    : [];
 
   if (!meeting) {
     return (
@@ -160,41 +131,38 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
     <div className="max-w-4xl mx-auto">
       <div className="mb-6 border-b">
         <div className="flex justify-between">
-          {/* Tabs on the left */}
           <div className="flex space-x-6">
             <TabButton
               icon={<FileText className="h-5 w-5" />}
               label="Transcript"
-              isActive={activeTab === 'transcript'}
-              onClick={() => onTabChange('transcript')}
+              isActive={activeTab === "transcript"}
+              onClick={() => onTabChange("transcript")}
             />
             <TabButton
               icon={<List className="h-5 w-5" />}
               label="Summary"
-              isActive={activeTab === 'summary'}
-              onClick={() => onTabChange('summary')}
+              isActive={activeTab === "summary"}
+              onClick={() => onTabChange("summary")}
             />
             <TabButton
               icon={<CheckSquare className="h-5 w-5" />}
               label="Tasks"
-              isActive={activeTab === 'tasks'}
-              onClick={() => onTabChange('tasks')}
+              isActive={activeTab === "tasks"}
+              onClick={() => onTabChange("tasks")}
             />
           </div>
 
-          {/* Download tab on the right */}
           <div>
             <TabButton
               icon={<Download className="h-5 w-5" />}
               label="Download"
-              isActive={activeTab === 'download'}
+              isActive={activeTab === "download"}
               onClick={handleDownload}
             />
           </div>
         </div>
       </div>
 
-      {/* Custom Modal */}
       <Modal isOpen={isDownloadModalOpen} onClose={closeModal}>
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Download Meeting Content</h2>
@@ -215,16 +183,31 @@ const MeetingContent: React.FC<MeetingContentProps> = ({
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h1 className="text-2xl font-bold mb-4">{meeting.title}</h1>
         <div className="prose max-w-none">
-          <div>
-            {activeTab === 'transcript' && 
-              <Transcript 
-                transcript={meeting.transcript} 
-                audioSrc={meeting.audioUrl} 
-                setMeetings={setMeetings}
-            />}
-            {activeTab === 'summary' && <Summary transcript={meeting.transcript} keyPoints={keyPoints} keyDecisions={keyDecisions} speakers={speakersData} />}
-            {activeTab === 'tasks' && <Tasks />}
-          </div>
+          {activeTab === "transcript" && (
+            <Transcript
+              transcript={meeting.transcript}
+              audioSrc={meeting.audioUrl}
+              setMeetings={setMeetings}
+            />
+          )}
+          {activeTab === "summary" &&
+            (isFetching ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                <p className="text-lg">Fetching summary...</p>
+              </div>
+            ) : (
+              <Summary summary={summary} speakers={speakersData} />
+            ))}
+          {activeTab === "tasks" &&
+            (isFetching ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                <p className="text-lg">Fetching tasks...</p>
+              </div>
+            ) : (
+              <Tasks tasks={tasks} />
+            ))}
         </div>
       </div>
     </div>
