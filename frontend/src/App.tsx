@@ -1,11 +1,16 @@
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AppLayout from './components/AppLayout';
+import HomePage from './components/HomePage';
 
 function App() {
-
   return (
-    <div>
-      <AppLayout />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/meetings" element={<AppLayout />} />
+      </Routes>
+    </Router>
   );
 }
 

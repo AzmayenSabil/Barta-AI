@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { Menu, User, LogOut, Plus } from 'lucide-react';
 
 interface NavbarProps {
@@ -8,6 +9,11 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onUploadClick, onProfileClick }) => {
+  const navigate = useNavigate(); // Initialize useNavigate
+
+  const handleLogout = () => {
+    navigate('/'); // Redirect to the homepage
+  };
   return (
     <nav className="bg-indigo-600 text-white">
       <div className="container mx-auto px-4 py-3">
@@ -35,9 +41,12 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onUploadClick, onProfi
             >
               <User className="h-6 w-6" />
             </button>
-            <button className="p-2 hover:bg-indigo-700 rounded-lg transition-colors">
-              <LogOut className="h-6 w-6" />
-            </button>
+            <button 
+        onClick={handleLogout} 
+        className="p-2 hover:bg-indigo-700 rounded-lg transition-colors"
+      >
+        <LogOut className="h-6 w-6" />
+      </button>
           </div>
         </div>
       </div>
